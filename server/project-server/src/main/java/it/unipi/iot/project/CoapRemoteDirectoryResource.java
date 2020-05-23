@@ -1,10 +1,11 @@
 package it.unipi.iot.project;
 
 import java.net.InetAddress;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.eclipse.californium.core.CoapClient;
+import org.eclipse.californium.core.CoapHandler;
+import org.eclipse.californium.core.CoapObserveRelation;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
@@ -13,76 +14,24 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import io.netty.handler.codec.AsciiHeadersEncoder.NewlineType;
 import it.unipi.iot.project.RegisteredActuator.ActuatorType;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
 
-
 /* ---------------------------------------------------------------
- * ----------------------- NODE TYPES ----------------------------
- * -------------------------------------------------------------*/
-
-class RegisteredNode {
-	
-	public InetAddress node_address;
-	public String resource_path;
-		
-	public RegisteredNode(InetAddress addr, String path) {
-		node_address = addr;
-		resource_path = path;
-	}
-	
-	public String toString() {
-		return node_address.toString().substring(1)+ "/" + resource_path + ";";
-	}
-}
-
-
-class RegisteredSensor extends RegisteredNode {
-	
-	public enum SensorType {
-		TEMPERATURE
-	}
-	
-	public SensorType type;
-	
-	public RegisteredSensor(InetAddress addr, SensorType _type, String path) {
-		super(addr, path);
-		this.type = _type;
-	}
-}
-
-
-class RegisteredActuator extends RegisteredNode {
-	
-	public enum ActuatorType {
-		ALARM
-	}
-	
-	public ActuatorType type;
-	
-	public RegisteredActuator(InetAddress addr, ActuatorType _type, String path) {
-		super(addr, path);
-	
-		this.type = _type;
-	}	
-}
-
-
-
-/* ---------------------------------------------------------------
- * --------------------- COAP RESOURCES --------------------------
+ * --------------------- COAP RESOURCE ---------------------------
  * -------------------------------------------------------------*/
 
 
 
-public class CoapRemoteDirectory extends CoapResource {
+public class CoapRemoteDirectoryResource extends CoapResource {
 	
 	ArrayList<RegisteredSensor> sensor_list;
 	ArrayList<RegisteredActuator> actuator_list;
+	
+	static final boolean debug = true;
 
 	
-	public CoapRemoteDirectory(String name) 
+	public CoapRemoteDirectoryResource(String name) 
 	{
 		super(name);
 		setObservable(true);
@@ -152,7 +101,7 @@ public class CoapRemoteDirectory extends CoapResource {
 		}
 		
 		exchange.respond(ResponseCode.CHANGED);
-		System.out.println("Registration successful from " + addr.toString());
+		printDebug("Registration successful from " + addr.toString());
 	}
 	
 	
@@ -196,14 +145,18 @@ public class CoapRemoteDirectory extends CoapResource {
 		if(!response.isSuccess())
 			return 1;
 		
+		//CoapHandler handler = new CoapHandler() {@Override public void onLoad(CoapResponseresponse) {String content = response.getResponseText();System.out.println(content);}@Override public void onError() {System.err.println("-Failed--------");}});
+		//CoapObserveRelation relation = client.observe(handler);
+		
 		//avoid duplicates
 		int i;
 		for (i = 0; i < sensor_list.size(); i++)
 			if(sensor_list.get(i).node_address.equals(addr) && sensor_list.get(i).resource_path.equals(path))
 				break;
 		
-		if (i < sensor_list.size())
-			sensor_list.add(new RegisteredSensor(addr, type_enum, path));		
+		if (i == sensor_list.size())
+			sensor_list.add(new RegisteredSensor(addr, type_enum, path));
+
 
 		return 0;
 	}
@@ -226,10 +179,10 @@ public class CoapRemoteDirectory extends CoapResource {
 		//avoid duplicates
 		int i;
 		for (i = 0; i < actuator_list.size(); i++)
-			if(actuator_list.get(i).node_address.equals(addr) && sensor_list.get(i).resource_path.equals(path))
+			if(actuator_list.get(i).node_address.equals(addr) && actuator_list.get(i).resource_path.equals(path))
 				break;
 		
-		if (i < actuator_list.size())
+		if (i == actuator_list.size())
 			actuator_list.add(new RegisteredActuator(addr, type_enum, path));
 		
 
@@ -242,9 +195,13 @@ public class CoapRemoteDirectory extends CoapResource {
 	
 	private void bad_request(CoapExchange exch, String mess) 
 	{
-		System.out.println(mess + " from " + exch.getSourceAddress());
+		printDebug(mess + " from " + exch.getSourceAddress());
 		exch.respond(ResponseCode.BAD_REQUEST);
 	}
 	
-	
+	private void printDebug(String s) 
+	{
+		if(debug)
+			System.out.println(s);
+	}
 }
