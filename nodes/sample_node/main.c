@@ -6,10 +6,12 @@
 
 /* Log configuration */
 #include "sys/log.h"
-#define LOG_MODULE "COAP"
+#define LOG_MODULE "SENSOR"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
-#define REG_SEND_INTERVAL (3*CLOCK_SECOND)
+#define REG_SEND_INTERVAL 			(3*CLOCK_SECOND)
+
+#define TEMP_PUBLISH_INTERVAL 		(20*CLOCK_SECOND)
 
 // Server IP and resource path
 #define SERVER_EP "coap://[fd00::1]:5683"
@@ -21,11 +23,22 @@
 
 #define COAP_APPLICATION_JSON	(50)
 
+//---------------- RESOURCES LIST ----------------------
+extern coap_resource_t temperature_res;
+//------------------------------------------------------
 
-/* Declare and auto-start this file's process */
-PROCESS(main_process, "Main process");
-AUTOSTART_PROCESSES(&main_process);
 
+/* Declare and auto-start the server and registrator processses */
+PROCESS(registration_process, "Registration process");
+PROCESS(server_process, "Server process");
+AUTOSTART_PROCESSES(&registration_process, &server_process);
+
+
+
+
+/* ---------------------------------------------------------------------------
+ * ------------------------- REGISTRATION PROCESS ----------------------------
+ * -------------------------------------------------------------------------*/
 
 //global variable to stop the main loop when the registration is completed
 uint8_t registered = 0;
@@ -60,14 +73,10 @@ void response_handler(coap_message_t* response)
 }
 
 
-// The client includes two data structures
-// coap_endpoint_t-> represents an endpoint
-// coap_message_t-> represent the message
-/*---------------------------------------------------------------------------*/
-PROCESS_THREAD(main_process, ev, data)
+PROCESS_THREAD(registration_process, ev, data)
 {
 	static coap_endpoint_t server_ep;
-	static coap_message_t request[1];  /* This way the packet can be treated as pointer as usual. */
+	static coap_message_t request[1];
 	static struct etimer periodic_timer;
 	char resource_path[] = "/remote_dir";
 	
@@ -95,6 +104,7 @@ PROCESS_THREAD(main_process, ev, data)
 	  	
 	  	// Issue the request in a blocking manner 
 	  	// The function returns when the request has been sent (ack received)
+	  	LOG_INFO("Issuing registration request...\n");
 	  	COAP_BLOCKING_REQUEST(&server_ep, request, response_handler);
 	  	
 	  	
@@ -103,4 +113,37 @@ PROCESS_THREAD(main_process, ev, data)
 
   	PROCESS_END();
 }
+
+
+
+
+/* ---------------------------------------------------------------------------
+ * --------------------------- SERVER PROCESS --------------------------------
+ * -------------------------------------------------------------------------*/
+ 
+PROCESS_THREAD(server_process, ev, data) 
+{
+	static struct etimer periodic_timer;
+	
+  	PROCESS_BEGIN();
+
+	//timer to send the request again in case of failure
+	etimer_set(&periodic_timer, TEMP_PUBLISH_INTERVAL);
+	
+	// Activation of a resource
+	coap_activate_resource(&temperature_res, "temperature");	
+
+  	LOG_INFO("Coap server started!\n");
+
+	while(1) {
+   		PROCESS_WAIT_EVENT_UNTIL(ev == PROCESS_EVENT_TIMER && data == &periodic_timer);
+
+	  	temperature_res.trigger();	  	
+	  	
+	  	etimer_reset(&periodic_timer);
+	}
+
+  	PROCESS_END();
+}
+
 

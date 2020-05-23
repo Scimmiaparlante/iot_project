@@ -4,13 +4,16 @@ import java.net.InetAddress;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResource;
+import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import io.netty.handler.codec.AsciiHeadersEncoder.NewlineType;
 import it.unipi.iot.project.RegisteredActuator.ActuatorType;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
 
@@ -30,7 +33,7 @@ class RegisteredNode {
 	}
 	
 	public String toString() {
-		return node_address.toString();
+		return node_address.toString().substring(1)+ "/" + resource_path + ";";
 	}
 }
 
@@ -79,7 +82,8 @@ public class CoapRemoteDirectory extends CoapResource {
 	ArrayList<RegisteredActuator> actuator_list;
 
 	
-	public CoapRemoteDirectory(String name) {
+	public CoapRemoteDirectory(String name) 
+	{
 		super(name);
 		setObservable(true);
 		
@@ -88,15 +92,14 @@ public class CoapRemoteDirectory extends CoapResource {
 	}
 	
 	//function to handle GET requests
-	public void handleGET(CoapExchange exchange) {
+	public void handleGET(CoapExchange exchange) 
+	{
 		
 		String response_s = "", response_a = "";
 		
 		for (int i = 0; i < sensor_list.size(); i++) {
-			response_s += sensor_list.get(i).node_address.toString() + "/";
-			response_s += sensor_list.get(i).resource_path + ";";
-			response_a += actuator_list.get(i).node_address.toString() + "/";
-			response_a += actuator_list.get(i).resource_path + ";";
+			response_s += sensor_list.get(i).toString();
+			response_a += actuator_list.get(i).toString();
 		}
 		
 		String response = response_s + response_a;
@@ -106,7 +109,8 @@ public class CoapRemoteDirectory extends CoapResource {
 	
 	
 	//function to handle POST requests
-	public void handlePOST(CoapExchange exchange) {
+	public void handlePOST(CoapExchange exchange) 
+	{
 		
 		InetAddress addr = exchange.getSourceAddress();
 		String payload = new String(exchange.getRequestPayload());
@@ -135,7 +139,7 @@ public class CoapRemoteDirectory extends CoapResource {
 		int ret = 0;
 		switch (action) {
 		case "register":
-			ret = handle_registration(type, subtype, path, addr);
+			ret = handleRegistration(type, subtype, path, addr);
 			break;
 		default:
 			bad_request(exchange, "Unknown action");
@@ -152,15 +156,16 @@ public class CoapRemoteDirectory extends CoapResource {
 	}
 	
 	
-	private int handle_registration(String type, String subtype, String path, InetAddress addr){
+	private int handleRegistration(String type, String subtype, String path, InetAddress addr)
+	{
 		int ret = 0;		
 		
 		switch (type) {
 		case "sensor":
-			ret = handle_registration_sensor(subtype, path, addr);
+			ret = handleRegistrationSensor(subtype, path, addr);
 			break;
 		case "actuator":
-			ret = handle_registration_actuator(subtype, path, addr);
+			ret = handleRegistrationActuator(subtype, path, addr);
 			break;
 		default:
 			ret = 1;
@@ -171,8 +176,8 @@ public class CoapRemoteDirectory extends CoapResource {
 	}
 	
 	
-	private int handle_registration_sensor(String type, String path, InetAddress addr) {
-		
+	private int handleRegistrationSensor(String type, String path, InetAddress addr) 
+	{	
 		SensorType type_enum;
 		
 		switch (type) {
@@ -185,6 +190,12 @@ public class CoapRemoteDirectory extends CoapResource {
 		}
 		
 		
+		//issue a get request for testing what I have received
+		CoapClient client = new CoapClient("coap://[" + addr.toString().substring(1) + "]/" + path);
+		CoapResponse response = client.get();
+		if(!response.isSuccess())
+			return 1;
+		
 		//avoid duplicates
 		int i;
 		for (i = 0; i < sensor_list.size(); i++)
@@ -192,15 +203,14 @@ public class CoapRemoteDirectory extends CoapResource {
 				break;
 		
 		if (i < sensor_list.size())
-			sensor_list.add(new RegisteredSensor(addr, type_enum, path));
-		
+			sensor_list.add(new RegisteredSensor(addr, type_enum, path));		
 
 		return 0;
 	}
 	
 	
-	private int handle_registration_actuator(String type, String path, InetAddress addr) {
-		
+	private int handleRegistrationActuator(String type, String path, InetAddress addr) 
+	{
 		ActuatorType type_enum;
 		
 		switch (path) {
@@ -230,7 +240,8 @@ public class CoapRemoteDirectory extends CoapResource {
 
 	
 	
-	private void bad_request(CoapExchange exch, String mess) {
+	private void bad_request(CoapExchange exch, String mess) 
+	{
 		System.out.println(mess + " from " + exch.getSourceAddress());
 		exch.respond(ResponseCode.BAD_REQUEST);
 	}
