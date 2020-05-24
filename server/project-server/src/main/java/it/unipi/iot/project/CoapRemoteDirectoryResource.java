@@ -26,33 +26,34 @@ import it.unipi.iot.project.RegisteredSensor.SensorType;
 public class CoapRemoteDirectoryResource extends CoapResource {
 	
 	ArrayList<RegisteredSensor> sensor_list;
+	ArrayList<CoapHandler> handler_List;
 	ArrayList<RegisteredActuator> actuator_list;
+	ControlApplication app;
 	
 	static final boolean debug = true;
 
 	
-	public CoapRemoteDirectoryResource(String name) 
+	public CoapRemoteDirectoryResource(String name, ControlApplication ca) 
 	{
 		super(name);
 		setObservable(true);
 		
-		sensor_list = new ArrayList<RegisteredSensor>(); 
-		actuator_list = new ArrayList<RegisteredActuator>(); 
+		sensor_list = new ArrayList<RegisteredSensor>();
+		handler_List = new ArrayList<CoapHandler>();
+		actuator_list = new ArrayList<RegisteredActuator>();
+		app = ca;
 	}
 	
 	//function to handle GET requests
 	public void handleGET(CoapExchange exchange) 
 	{
+		String response  = "";
 		
-		String response_s = "", response_a = "";
-		
-		for (int i = 0; i < sensor_list.size(); i++) {
-			response_s += sensor_list.get(i).toString();
-			response_a += actuator_list.get(i).toString();
-		}
-		
-		String response = response_s + response_a;
-		
+		for (RegisteredSensor sens : sensor_list)
+			response += sens.toString();
+		for (RegisteredActuator act : actuator_list)
+			response += act.toString();
+
 		exchange.respond(response);		
 	}
 	
@@ -60,7 +61,6 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 	//function to handle POST requests
 	public void handlePOST(CoapExchange exchange) 
 	{
-		
 		InetAddress addr = exchange.getSourceAddress();
 		String payload = new String(exchange.getRequestPayload());
 		int content_format = exchange.getRequestOptions().getContentFormat();
@@ -139,14 +139,11 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		}
 		
 		
-		//issue a get request for testing what I have received
+		//issue a get request for testing that the data is correct
 		CoapClient client = new CoapClient("coap://[" + addr.toString().substring(1) + "]/" + path);
 		CoapResponse response = client.get();
 		if(!response.isSuccess())
 			return 1;
-		
-		//CoapHandler handler = new CoapHandler() {@Override public void onLoad(CoapResponseresponse) {String content = response.getResponseText();System.out.println(content);}@Override public void onError() {System.err.println("-Failed--------");}});
-		//CoapObserveRelation relation = client.observe(handler);
 		
 		//avoid duplicates
 		int i;
@@ -154,9 +151,18 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 			if(sensor_list.get(i).node_address.equals(addr) && sensor_list.get(i).resource_path.equals(path))
 				break;
 		
-		if (i == sensor_list.size())
-			sensor_list.add(new RegisteredSensor(addr, type_enum, path));
-
+		if (i == sensor_list.size()) {
+			
+			//ok, we're go. Create new data structures and subscribe
+			CoapObserveRelation relation = null;
+			
+			RegisteredSensor sensor = new RegisteredSensor(addr, type_enum, path, relation);
+			
+			SensorHandler handler = new SensorHandler(app, sensor);
+			relation = client.observe(handler);
+			
+			sensor_list.add(sensor);
+		}
 
 		return 0;
 	}

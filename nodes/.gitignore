@@ -1,2 +1,3 @@
 *.cooja
-**/build/ 
+**/build/
+*.log 
