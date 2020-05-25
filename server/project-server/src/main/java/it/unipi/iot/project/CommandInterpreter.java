@@ -3,6 +3,10 @@ package it.unipi.iot.project;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import it.unipi.iot.project.ControlApplication.ActuationResult;
+import it.unipi.iot.project.RegisteredActuator.ActuatorType;
+import it.unipi.iot.project.RegisteredActuator.AlarmAction;
+import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
 
 public class CommandInterpreter {
@@ -42,6 +46,9 @@ public class CommandInterpreter {
 			case "read":
 				commandRead(words);
 				break;
+			case "set":
+				commandSet(words);
+				break;
 			case "help":
 			default:
 				commandHelp();
@@ -55,11 +62,12 @@ public class CommandInterpreter {
         System.exit(0);
 	}
 	
-	
+
 	private static void commandHelp() {
 		System.out.println("The available commands are:");
-		System.out.println("list [sensors | actuators] \t\t\t show a list of the nodes (or sensors/actuators)");
+		System.out.println("list [sensors | actuators] \t\t\t show a list of the nodes (or sensors/actuators only) and their number");
 		System.out.println("read [<sensor_type>] [-t <timestamp>] \t\t show the readings of the sensors (filter by type and min time)");
+		System.out.println("set <res_numer> <value> \t\t\t set the resource <res_number> with value <value>");
 		System.out.println("help \t\t\t\t\t\t display this message");
 		System.out.println("exit \t\t\t\t\t\t terminate the program");
 		System.out.print("--------------------------------------------------------------------------------------");
@@ -75,15 +83,15 @@ public class CommandInterpreter {
 		if (params.length < 2 || params[1].equals("sensors")) {
 			correct = true;
 			System.out.println("SENSORS:  (" + numSensors + ")");
-			for (RegisteredSensor sensor : app.remoteDir_res.sensor_list)
-				System.out.println(sensor.toString());
+			for (int i = 0; i < app.remoteDir_res.sensor_list.size(); i++)
+				System.out.println(i + ") " + app.remoteDir_res.sensor_list.get(i).toString());
 		}
 		
 		if (params.length < 2 || params[1].equals("actuators")) {
 			correct = true;
 			System.out.println("ACTUATORS:  (" + numActuators + ")");
-			for (RegisteredActuator actuator : app.remoteDir_res.actuator_list)
-				System.out.println(actuator.toString());		
+			for (int i = 0; i < app.remoteDir_res.actuator_list.size(); i++)
+				System.out.println(i + ") " + app.remoteDir_res.actuator_list.get(i).toString());		
 		}
 		
 		if(!correct)
@@ -134,8 +142,53 @@ public class CommandInterpreter {
 		for (SensorReading sr : res) {
 			System.out.println(sr.sensor.node_address + sr.sensor.resource_path + 
 								" - ts: " + sr.timestamp + " - val:" + sr.value);
+		}	
+	}
+	
+	
+	private static void commandSet(String[] words) 
+	{
+		int act_num;
+		ActuatorType type;
+		RegisteredActuator act;
+		//get sensor number
+		try {
+			act_num = Integer.parseInt(words[1]);
+			
+			if(act_num >= app.remoteDir_res.actuator_list.size() || act_num < 0)
+				throw new ArrayIndexOutOfBoundsException();
+			
+			act = app.remoteDir_res.actuator_list.get(act_num);
+			type = act.type;
+			
+		} catch (NumberFormatException | ArrayIndexOutOfBoundsException  e) {
+			System.out.print("Bad actuator number");
+			return;
 		}
 		
+		//get action
+		ActuationResult res;
+		try {
+			String action = words[2];
+			IActuatorAction aa;
+			
+			switch (type) {
+			case ALARM:
+				aa = AlarmAction.valueOf(action.toUpperCase());
+				break;
+			default:
+				return;
+			}
+			
+			res = app.setActuation(act, aa);			
+			
+		} catch (IllegalArgumentException e) {
+			System.out.print("Bad actuator action");
+			return;
+		}
+		
+		if(res != ActuationResult.SUCCESS)
+			System.out.print("Something went wrong during the actuation");
 	}
 	
 }

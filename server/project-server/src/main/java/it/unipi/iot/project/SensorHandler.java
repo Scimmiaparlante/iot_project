@@ -23,7 +23,7 @@ public class SensorHandler implements CoapHandler {
 	@Override public void onLoad(CoapResponse response) 
 	{
 		String content = response.getResponseText();
-		System.out.println("Looks like someone sent me this: " + content);
+		//System.out.println("Received this: " + content);
 		
 		int base_time;
 		//String base_name;
@@ -49,8 +49,6 @@ public class SensorHandler implements CoapHandler {
 			return;
 		}
 		
-		//parsa il messaggio
-		//app.storeReading(....)
 	}
 	
 	

@@ -172,11 +172,10 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 	{
 		ActuatorType type_enum;
 		
-		switch (path) {
+		switch (type) {
 		case "alarm":
 			type_enum = ActuatorType.ALARM;
 			break;
-			
 		default:
 			return 1;
 		}

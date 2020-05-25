@@ -2,8 +2,12 @@ package it.unipi.iot.project;
 
 import java.util.ArrayList;
 
+import org.eclipse.californium.core.CoapClient;
+import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.CoapServer;
+import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
+import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
 
 
@@ -12,6 +16,8 @@ public class ControlApplication {
 	CoapServer server;
 	CoapRemoteDirectoryResource remoteDir_res;
 	ArrayList<SensorReading> sensor_data;
+	
+	public enum ActuationResult {SUCCESS, FAILURE};
 	
 	public ControlApplication()	
 	{
@@ -72,5 +78,16 @@ public class ControlApplication {
 	}
 	
 	
+	public ActuationResult setActuation(RegisteredActuator actuator, IActuatorAction action) 
+	{
+		CoapClient client = new CoapClient("coap:/" + actuator.node_address + "/" + actuator.resource_path);
+		
+		CoapResponse response = client.post(action.getActionCommand(), MediaTypeRegistry.TEXT_PLAIN);
+		
+		if(!response.isSuccess())
+			return ActuationResult.FAILURE;
+		
+		return ActuationResult.SUCCESS;
+	}
 	
 }
