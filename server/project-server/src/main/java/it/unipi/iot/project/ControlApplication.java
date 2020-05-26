@@ -7,8 +7,12 @@ import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
+import it.unipi.iot.project.RegisteredActuator.ActuatorType;
+import it.unipi.iot.project.RegisteredActuator.AlarmAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
+import it.unipi.iot.project.Rules.IRuleAction;
+import it.unipi.iot.project.Rules.Rule;
 
 
 public class ControlApplication {
@@ -16,12 +20,15 @@ public class ControlApplication {
 	CoapServer server;
 	CoapRemoteDirectoryResource remoteDir_res;
 	ArrayList<SensorReading> sensor_data;
+	IRuleAction[] rule_actions;
+	ArrayList<Rule> rules;
 	
 	public enum ActuationResult {SUCCESS, FAILURE};
 	
 	public ControlApplication()	
 	{
 		sensor_data = new ArrayList<SensorReading>();
+		init_rules();
 		
 		System.out.println("-- Control Application --");
 		
@@ -36,7 +43,7 @@ public class ControlApplication {
 		
 	}
 	
-	
+
 	public void stop() 
 	{
 		server.stop();
@@ -88,5 +95,51 @@ public class ControlApplication {
 		
 		return ActuationResult.SUCCESS;
 	}
+	
+	
+	public boolean setRule(RegisteredSensor sensor, RegisteredActuator actuator, IRuleAction rule_act) 
+	{
+		if (actuator.type != rule_act.getActuatorType()) {
+			System.out.println("Bad actuator type");
+			return false;
+		} else if (sensor.type != rule_act.getSensorType()) {
+			System.out.println("Bad sensor type");
+			return false;
+		}
+		
+		//create rule
+		rules.add(new Rule(sensor, actuator, rule_act));
+		
+		return true;
+	}
+	
+	
+	
+	//----------Here you need to define the control rules----------ru-----------------------------------------------
+	
+	private void init_rules() {
+		
+		rules = new ArrayList<Rule>();
+		
+		rule_actions = new IRuleAction[] {
+				
+				//RULE #1
+				new IRuleAction() {
+					
+					@Override public String getName() { return "Example rule"; }
+					@Override public ActuatorType getActuatorType() { return ActuatorType.ALARM; }
+					@Override public SensorType getSensorType() { return SensorType.TEMPERATURE; }
+					
+					@Override public Boolean check(IActuatorAction command, float input) {
+						if(input > 28) { command = AlarmAction.ON; return true; }
+						return false;
+					}
+				},			
+					
+	
+		};
+		
+	}
+
 	
 }

@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import it.unipi.iot.project.ControlApplication.ActuationResult;
-import it.unipi.iot.project.RegisteredActuator.ActuatorType;
 import it.unipi.iot.project.RegisteredActuator.AlarmAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
+import it.unipi.iot.project.Rules.IRuleAction;
+import it.unipi.iot.project.Rules.Rule;
 
 public class CommandInterpreter {
 	
@@ -49,6 +50,12 @@ public class CommandInterpreter {
 			case "set":
 				commandSet(words);
 				break;
+			case "rules":
+				commandRules(words);
+				break;
+			case "apply":
+				commandApply(words);
+				break;
 			case "help":
 			default:
 				commandHelp();
@@ -61,7 +68,7 @@ public class CommandInterpreter {
         app.stop();
         System.exit(0);
 	}
-	
+
 
 	private static void commandHelp() {
 		System.out.println("The available commands are:");
@@ -176,6 +183,40 @@ public class CommandInterpreter {
 		
 		if(res != ActuationResult.SUCCESS)
 			System.out.print("Something went wrong during the actuation");
+	}
+	
+	private static void commandRules(String[] words) 
+	{
+		for (int i = 0; i < app.rule_actions.length; i++) {
+			IRuleAction ra = app.rule_actions[i];
+			
+			System.out.println(i + ") [" + ra.getSensorType() + " -> " + ra.getActuatorType() + "] " +  ra.getName());
+		}
+	}
+	
+	
+	private static void commandApply(String[] words) 
+	{
+		RegisteredActuator actuator;
+		RegisteredSensor sensor;
+		IRuleAction rule_act;
+		try {
+			
+			rule_act = app.rule_actions[Integer.parseInt(words[1])];
+			sensor = app.remoteDir_res.sensor_list.get(Integer.parseInt(words[2]));
+			actuator = app.remoteDir_res.actuator_list.get(Integer.parseInt(words[3]));
+			
+		} catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
+			System.out.print("Bad command: specify the 3 numbers");
+			return;
+		}
+		
+		boolean success = app.setRule(sensor, actuator, rule_act);
+		
+		if(success)
+			System.out.print("Ruled applied successfully");
+		else
+			System.out.print("Ruled application failed");
 	}
 	
 }
