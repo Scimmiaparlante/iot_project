@@ -8,6 +8,7 @@ import it.unipi.iot.project.RegisteredActuator.AlarmAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
 import it.unipi.iot.project.Rules.IRuleAction;
+import it.unipi.iot.project.Rules.Rule;
 
 public class CommandInterpreter {
 	
@@ -55,6 +56,9 @@ public class CommandInterpreter {
 			case "apply":
 				commandApply(words);
 				break;
+			case "unapply":
+				commandUnapply(words);
+				break;
 			case "help":
 			default:
 				commandHelp();
@@ -74,7 +78,9 @@ public class CommandInterpreter {
 		System.out.println("list [sensors | actuators] \t\t\t show a list of the nodes (or sensors/actuators only) and their number");
 		System.out.println("read [<sensor_type>] [-t <timestamp>] \t\t show the readings of the sensors (filter by type and min time)");
 		System.out.println("set <res_number> <value> \t\t\t set the resource <res_number> with value <value>");
+		System.out.println("rules [applied] \t\t\t\t list the existing (or applied) rules");
 		System.out.println("apply <rule_num> <sensor_num> <actuator_num> \t apply the specified rule to the specified sensor and actuator");
+		System.out.println("unapply <applied_rule_num> \t\t\t unapply the specified rule (number from the \"rules applied\" command)");
 		System.out.println("help \t\t\t\t\t\t display this message");
 		System.out.println("exit \t\t\t\t\t\t terminate the program");
 		System.out.print("--------------------------------------------------------------------------------------");
@@ -187,10 +193,24 @@ public class CommandInterpreter {
 	
 	private static void commandRules(String[] words) 
 	{
-		for (int i = 0; i < app.rule_actions.length; i++) {
-			IRuleAction ra = app.rule_actions[i];
+		if(words.length >= 2 && words[1].equals("applied")) {
+			//applied rules
+			for (int i = 0; i < app.rules.size(); i++) {
+				Rule r = app.rules.get(i);
+				
+				System.out.println(i + ") [" + r.sensor.node_address.toString().substring(1) + r.sensor.resource_path
+											+ " -> " 
+											+ r.actuator.node_address.toString().substring(1) + r.actuator.resource_path
+											+ "] " +  r.action.getName());
+			}
 			
-			System.out.println(i + ") [" + ra.getSensorType() + " -> " + ra.getActuatorType() + "] " +  ra.getName());
+		} else {
+			//existing rules
+			for (int i = 0; i < app.rule_actions.length; i++) {
+				IRuleAction ra = app.rule_actions[i];
+				
+				System.out.println(i + ") [" + ra.getSensorType() + " -> " + ra.getActuatorType() + "] " +  ra.getName());
+			}
 		}
 	}
 	
@@ -207,7 +227,7 @@ public class CommandInterpreter {
 			actuator = app.remoteDir_res.actuator_list.get(Integer.parseInt(words[3]));
 			
 		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-			System.out.print("Bad command: specify the 3 numbers");
+			System.out.print("Bad command: specify the 3 numbers correctly");
 			return;
 		}
 		
@@ -218,5 +238,19 @@ public class CommandInterpreter {
 		else
 			System.out.print("Ruled application failed");
 	}
+	
+	private static void commandUnapply(String[] words) 
+	{
+		try {
+			app.rules.remove(Integer.parseInt(words[1]));
+			
+		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+			System.out.print("Bad index: specify the index correctly");
+			return;
+		}
+		
+	}
+	
+	
 	
 }

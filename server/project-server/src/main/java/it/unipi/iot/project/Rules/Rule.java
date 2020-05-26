@@ -9,7 +9,7 @@ public class Rule {
 	public RegisteredSensor sensor;
 	public RegisteredActuator actuator;
 	
-	IRuleAction action;
+	public IRuleAction action;
 	
 	public Rule(RegisteredSensor rs, RegisteredActuator ra, IRuleAction ac) 
 	{
