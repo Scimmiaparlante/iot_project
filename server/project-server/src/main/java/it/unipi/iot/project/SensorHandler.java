@@ -6,6 +6,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
+import it.unipi.iot.project.Rules.Rule;
+
 
 public class SensorHandler implements CoapHandler {
 	
@@ -26,6 +29,7 @@ public class SensorHandler implements CoapHandler {
 		//System.out.println("Received this: " + content);
 		
 		int base_time;
+		float val = 0;
 		//String base_name;
 		
 		try {
@@ -38,7 +42,7 @@ public class SensorHandler implements CoapHandler {
 			for (int i = 0; i < e.size(); i++) {
 				JSONObject record = (JSONObject) e.get(i);
 				
-				float val = Float.parseFloat(record.get("v").toString());
+				val = Float.parseFloat(record.get("v").toString());
 				int time = Integer.parseInt(record.get("t").toString());
 				
 				app.storeReading(base_time + time, val, sensor);
@@ -49,6 +53,19 @@ public class SensorHandler implements CoapHandler {
 			return;
 		}
 		
+		//check if there are rules to apply
+		for (Rule r : app.rules) {
+			if(r.sensor == this.sensor) {
+				
+				final Rule fr = r;
+				final IActuatorAction command = r.check(val);
+				if(command != null) {
+					//run in a separate thread, otherwise the post call hangs
+					Thread t = new Thread() { public void run() { app.setActuation(fr.actuator, command);} };
+					t.start();
+				}
+			}
+		}
 	}
 	
 	

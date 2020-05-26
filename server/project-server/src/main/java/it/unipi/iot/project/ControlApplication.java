@@ -88,11 +88,12 @@ public class ControlApplication {
 	public ActuationResult setActuation(RegisteredActuator actuator, IActuatorAction action) 
 	{
 		CoapClient client = new CoapClient("coap://[" + actuator.node_address.toString().substring(1) + "]/" + actuator.resource_path);
+
 		CoapResponse response = client.post(action.getActionCommand(), MediaTypeRegistry.TEXT_PLAIN);
 
-		if(!response.isSuccess())
+		if(response == null || !response.isSuccess())
 			return ActuationResult.FAILURE;
-		
+
 		return ActuationResult.SUCCESS;
 	}
 	
@@ -130,9 +131,9 @@ public class ControlApplication {
 					@Override public ActuatorType getActuatorType() { return ActuatorType.ALARM; }
 					@Override public SensorType getSensorType() { return SensorType.TEMPERATURE; }
 					
-					@Override public Boolean check(IActuatorAction command, float input) {
-						if(input > 28) { command = AlarmAction.ON; return true; }
-						return false;
+					@Override public IActuatorAction check(float input) {
+						if(input > 28) { return AlarmAction.ON; }
+						return null;
 					}
 				},			
 					

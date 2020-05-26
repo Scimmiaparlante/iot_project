@@ -44,7 +44,7 @@
 // Set the maximum number of CoAP concurrent transactions:
 
 #undef COAP_MAX_OPEN_TRANSACTIONS
-#define COAP_MAX_OPEN_TRANSACTIONS   4
+#define COAP_MAX_OPEN_TRANSACTIONS   10
 
 #if BORDER_ROUTER_CONF_WEBSERVER
 #define UIP_CONF_TCP 1

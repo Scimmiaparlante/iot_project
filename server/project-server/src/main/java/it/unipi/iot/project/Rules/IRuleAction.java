@@ -6,8 +6,8 @@ import it.unipi.iot.project.RegisteredSensor.SensorType;
 
 public interface IRuleAction {
 	
-	Boolean check(IActuatorAction command, float input);
+	public IActuatorAction check(float input);
 	String getName();
-	ActuatorType getActuatorType();	//NOTE: I need an interface for this because abstract variables are not allowed in Java
+	ActuatorType getActuatorType();	//NOTE: I need an interface for these because abstract variables are not allowed in Java
 	SensorType getSensorType();
 }

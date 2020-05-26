@@ -8,7 +8,6 @@ import it.unipi.iot.project.RegisteredActuator.AlarmAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
 import it.unipi.iot.project.Rules.IRuleAction;
-import it.unipi.iot.project.Rules.Rule;
 
 public class CommandInterpreter {
 	
@@ -74,7 +73,8 @@ public class CommandInterpreter {
 		System.out.println("The available commands are:");
 		System.out.println("list [sensors | actuators] \t\t\t show a list of the nodes (or sensors/actuators only) and their number");
 		System.out.println("read [<sensor_type>] [-t <timestamp>] \t\t show the readings of the sensors (filter by type and min time)");
-		System.out.println("set <res_numer> <value> \t\t\t set the resource <res_number> with value <value>");
+		System.out.println("set <res_number> <value> \t\t\t set the resource <res_number> with value <value>");
+		System.out.println("apply <rule_num> <sensor_num> <actuator_num> \t apply the specified rule to the specified sensor and actuator");
 		System.out.println("help \t\t\t\t\t\t display this message");
 		System.out.println("exit \t\t\t\t\t\t terminate the program");
 		System.out.print("--------------------------------------------------------------------------------------");
@@ -155,7 +155,7 @@ public class CommandInterpreter {
 			
 			act = app.remoteDir_res.actuator_list.get(act_num);
 			
-		} catch (NumberFormatException | ArrayIndexOutOfBoundsException  e) {
+		} catch (NumberFormatException | IndexOutOfBoundsException  e) {
 			System.out.print("Bad actuator number");
 			return;
 		}
@@ -176,7 +176,7 @@ public class CommandInterpreter {
 
 			res = app.setActuation(act, aa);			
 			
-		} catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
+		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
 			System.out.print("Bad actuator action");
 			return;
 		}
@@ -206,7 +206,7 @@ public class CommandInterpreter {
 			sensor = app.remoteDir_res.sensor_list.get(Integer.parseInt(words[2]));
 			actuator = app.remoteDir_res.actuator_list.get(Integer.parseInt(words[3]));
 			
-		} catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
+		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
 			System.out.print("Bad command: specify the 3 numbers");
 			return;
 		}

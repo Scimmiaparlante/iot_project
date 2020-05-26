@@ -6,8 +6,8 @@ import it.unipi.iot.project.RegisteredSensor;
 
 public class Rule {
 	
-	RegisteredSensor sensor;
-	RegisteredActuator actuator;
+	public RegisteredSensor sensor;
+	public RegisteredActuator actuator;
 	
 	IRuleAction action;
 	
@@ -19,8 +19,8 @@ public class Rule {
 	}
 	
 	
-	public Boolean check(IActuatorAction command, float input)
+	public IActuatorAction check(float input)
 	{
-		return action.check(command, input);
+		return action.check(input);
 	}
 }
