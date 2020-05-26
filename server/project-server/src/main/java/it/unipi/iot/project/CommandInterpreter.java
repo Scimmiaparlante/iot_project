@@ -126,17 +126,6 @@ public class CommandInterpreter {
 			words_left--; i++;
 		}
 		
-/* OLD WAY
-		if (words.length >= 2) {
-			try {
-				type = SensorType.valueOf(words[1].toUpperCase());
-			} catch (IllegalArgumentException e) {
-				System.out.print("Bad sensor type");
-				return;
-			}
-		}
-*/
-		
 		ArrayList<SensorReading> res = app.getReadings(type, min_time);
 		
 		for (SensorReading sr : res) {
@@ -149,7 +138,6 @@ public class CommandInterpreter {
 	private static void commandSet(String[] words) 
 	{
 		int act_num;
-		ActuatorType type;
 		RegisteredActuator act;
 		//get sensor number
 		try {
@@ -159,7 +147,6 @@ public class CommandInterpreter {
 				throw new ArrayIndexOutOfBoundsException();
 			
 			act = app.remoteDir_res.actuator_list.get(act_num);
-			type = act.type;
 			
 		} catch (NumberFormatException | ArrayIndexOutOfBoundsException  e) {
 			System.out.print("Bad actuator number");
@@ -172,17 +159,17 @@ public class CommandInterpreter {
 			String action = words[2];
 			IActuatorAction aa;
 			
-			switch (type) {
+			switch (act.type) {
 			case ALARM:
 				aa = AlarmAction.valueOf(action.toUpperCase());
 				break;
 			default:
 				return;
 			}
-			
+
 			res = app.setActuation(act, aa);			
 			
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
 			System.out.print("Bad actuator action");
 			return;
 		}

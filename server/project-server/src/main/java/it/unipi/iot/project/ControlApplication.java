@@ -80,10 +80,9 @@ public class ControlApplication {
 	
 	public ActuationResult setActuation(RegisteredActuator actuator, IActuatorAction action) 
 	{
-		CoapClient client = new CoapClient("coap:/" + actuator.node_address + "/" + actuator.resource_path);
-		
+		CoapClient client = new CoapClient("coap://[" + actuator.node_address.toString().substring(1) + "]/" + actuator.resource_path);
 		CoapResponse response = client.post(action.getActionCommand(), MediaTypeRegistry.TEXT_PLAIN);
-		
+
 		if(!response.isSuccess())
 			return ActuationResult.FAILURE;
 		

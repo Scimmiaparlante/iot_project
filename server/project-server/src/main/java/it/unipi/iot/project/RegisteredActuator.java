@@ -8,7 +8,7 @@ public class RegisteredActuator extends RegisteredNode {
 		public String getActionCommand();
 	}
 	
-	public enum ActuatorType{
+	public enum ActuatorType {
 		ALARM
 	}
 	
@@ -16,8 +16,8 @@ public class RegisteredActuator extends RegisteredNode {
 	public enum AlarmAction implements IActuatorAction {
 		ON, OFF;
 		public String getActionCommand() {
-			if(this == ON) return "1";
-			else return "0";
+			if(this == ON) return "cmd=1";
+			else return "cmd=0";
 		}
 	}
 	//-----------------------------------------------------------------
