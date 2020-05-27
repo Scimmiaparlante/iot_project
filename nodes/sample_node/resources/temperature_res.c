@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "coap-engine.h"
+#include "coap-constants.h"
 
 #include "sys/log.h"
 #define LOG_MODULE "TEMP_RES"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
-#define MIME_APPLICATION_JSON	(50)
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_event_handler(void);
@@ -46,7 +46,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 	
 	LOG_INFO("Handling get request\n");
 	
-	coap_set_header_content_format(response, TEXT_PLAIN);
+	coap_set_header_content_format(response, APPLICATION_JSON);
 	
 	
 	
