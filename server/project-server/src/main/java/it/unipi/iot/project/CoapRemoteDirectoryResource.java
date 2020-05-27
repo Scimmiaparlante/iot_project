@@ -2,9 +2,9 @@ package it.unipi.iot.project;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.eclipse.californium.core.CoapClient;
-import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapObserveRelation;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapResponse;
@@ -25,9 +25,8 @@ import it.unipi.iot.project.RegisteredSensor.SensorType;
 
 public class CoapRemoteDirectoryResource extends CoapResource {
 	
-	ArrayList<RegisteredSensor> sensor_list;
-	ArrayList<CoapHandler> handler_List;
-	ArrayList<RegisteredActuator> actuator_list;
+	ArrayList<RegisteredSensor> sensor_list;		//SORTED LIST
+	ArrayList<RegisteredActuator> actuator_list;	//SORTED LIST
 	ControlApplication app;
 	
 	static final boolean debug = true;
@@ -39,7 +38,6 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		setObservable(true);
 		
 		sensor_list = new ArrayList<RegisteredSensor>();
-		handler_List = new ArrayList<CoapHandler>();
 		actuator_list = new ArrayList<RegisteredActuator>();
 		app = ca;
 	}
@@ -162,6 +160,7 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 			relation = client.observe(handler);
 			
 			sensor_list.add(sensor);
+			Collections.sort(sensor_list);
 		}
 
 		return 0;
@@ -187,15 +186,15 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 			if(actuator_list.get(i).node_address.equals(addr) && actuator_list.get(i).resource_path.equals(path))
 				break;
 		
-		if (i == actuator_list.size())
+		if (i == actuator_list.size()) {
 			actuator_list.add(new RegisteredActuator(addr, type_enum, path));
+			Collections.sort(actuator_list);
+		}
 		
 
 		return 0;
 	}
-
 	
-
 	
 	
 	private void bad_request(CoapExchange exch, String mess) 
