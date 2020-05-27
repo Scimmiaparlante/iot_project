@@ -131,7 +131,9 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		case "temperature":
 			type_enum = SensorType.TEMPERATURE;
 			break;
-			
+		case "heartbeat":
+			type_enum = SensorType.HEARTBEAT;
+			break;			
 		default:
 			return 1;
 		}
