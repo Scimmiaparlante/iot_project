@@ -99,7 +99,7 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		}
 		
 		exchange.respond(ResponseCode.CHANGED);
-		printDebug("Registration successful from " + addr.toString());
+		printDebug("Registration successful from " + addr.toString() + " for " + subtype);
 	}
 	
 	
