@@ -3,6 +3,7 @@
 #include "contiki.h"
 #include "coap-engine.h"
 #include "coap-blocking-api.h"
+#include "coap-constants.h"
 
 /* Log configuration */
 #include "sys/log.h"
@@ -16,12 +17,6 @@
 // Server IP and resource path
 #define SERVER_EP "coap://[fd00::1]:5683"
 
-//coap message codes
-#define COAP_CREATED			((2U << 5) | 1U)
-#define COAP_CHANGED			((2U << 5) | 4U)
-#define COAP_BAD_REQUEST 		((4U << 5) | 0U)
-
-#define COAP_APPLICATION_JSON	(50)
 
 //---------------- RESOURCES LIST ----------------------
 extern coap_resource_t temperature_res;
@@ -62,10 +57,10 @@ void response_handler_temp(coap_message_t* response)
 	//see if the operation was successful
 	resp_code = response->code;
 
-	if(resp_code == COAP_CHANGED) {
+	if(resp_code == CHANGED_2_04) {
 		LOG_INFO("Registration successful\n");
 		registered_temp = 1;
-	} else if (resp_code == COAP_BAD_REQUEST) {
+	} else if (resp_code == BAD_REQUEST_4_00) {
 		LOG_INFO("Registration failed: BAD REQUEST\n");
 	} else {
 		LOG_INFO("Registration failed: unknown error: %x\n", resp_code);
@@ -102,7 +97,7 @@ PROCESS_THREAD(temp_registration_process, ev, data)
 	  	// Set the payload
 	  	const char msg[] = "{\"a\" : \"register\" , \"t\" : \"sensor\" , \"st\" : \"temperature\" , \"p\" : \"/temperature\"}";
 	  	coap_set_payload(request, (uint8_t *)msg, sizeof(msg) -1);
-	  	coap_set_header_content_format(request, COAP_APPLICATION_JSON);
+	  	coap_set_header_content_format(request, APPLICATION_JSON);
 	  	
 	  	// Issue the request in a blocking manner 
 	  	// The function returns when the request has been sent (ack received)
@@ -138,10 +133,10 @@ void response_handler_alarm(coap_message_t* response)
 	//see if the operation was successful
 	resp_code = response->code;
 
-	if(resp_code == COAP_CHANGED) {
+	if(resp_code == CHANGED_2_04) {
 		LOG_INFO("Registration successful\n");
 		registered_alarm = 1;
-	} else if (resp_code == COAP_BAD_REQUEST) {
+	} else if (resp_code == BAD_REQUEST_4_00) {
 		LOG_INFO("Registration failed: BAD REQUEST\n");
 	} else {
 		LOG_INFO("Registration failed: unknown error: %x\n", resp_code);
@@ -178,7 +173,7 @@ PROCESS_THREAD(alarm_registration_process, ev, data)
 	  	// Set the payload
 	  	const char msg[] = "{\"a\" : \"register\" , \"t\" : \"actuator\" , \"st\" : \"alarm\" , \"p\" : \"/alarm\"}";
 	  	coap_set_payload(request, (uint8_t *)msg, sizeof(msg) -1);
-	  	coap_set_header_content_format(request, COAP_APPLICATION_JSON);
+	  	coap_set_header_content_format(request, APPLICATION_JSON);
 	  	
 	  	// Issue the request in a blocking manner 
 	  	// The function returns when the request has been sent (ack received)
