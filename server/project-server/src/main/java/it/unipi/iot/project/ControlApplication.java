@@ -50,11 +50,21 @@ public class ControlApplication {
 	}
 	
 	
-	public void storeReading(int time, float val, RegisteredSensor sens) 
+	public void storeReading(String name, int time, float val, String meas_unit, RegisteredSensor sens) 
 	{
-		sensor_data.add(new SensorReading(time, val, sens));
+		sensor_data.add(new SensorReading(name, time, val, meas_unit, sens));
 	}
 	
+	public void storeReading(SensorReading reading)
+	{
+		sensor_data.add(reading);
+	}
+	
+	public void storeReading(SensorReading[] readings)
+	{
+		for (SensorReading r : readings)
+			sensor_data.add(r);			
+	}
 	
 	public ArrayList<SensorReading> getReadings() 
 	{

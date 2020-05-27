@@ -23,4 +23,12 @@ public class Rule {
 	{
 		return action.check(input);
 	}
+	
+	public String toString()
+	{
+		return ("[" + sensor.node_address.toString().substring(1) + sensor.resource_path
+				+ " -> " 
+				+ actuator.node_address.toString().substring(1) + actuator.resource_path
+				+ "] " +  action.getName());
+	}
 }

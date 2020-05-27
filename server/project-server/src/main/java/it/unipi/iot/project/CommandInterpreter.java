@@ -154,10 +154,8 @@ public class CommandInterpreter {
 		
 		ArrayList<SensorReading> res = app.getReadings(type, min_time);
 		
-		for (SensorReading sr : res) {
-			System.out.println(sr.sensor.node_address + sr.sensor.resource_path + 
-								" - ts: " + sr.timestamp + " - val:" + sr.value);
-		}	
+		for (SensorReading sr : res)
+			System.out.println(sr.toString());
 	}
 	
 	
@@ -211,10 +209,7 @@ public class CommandInterpreter {
 			for (int i = 0; i < app.rules.size(); i++) {
 				Rule r = app.rules.get(i);
 				
-				System.out.println(i + ") [" + r.sensor.node_address.toString().substring(1) + r.sensor.resource_path
-											+ " -> " 
-											+ r.actuator.node_address.toString().substring(1) + r.actuator.resource_path
-											+ "] " +  r.action.getName());
+				System.out.println(i + ") " + r.toString());
 			}
 			
 		} else {

@@ -51,7 +51,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 	
 	
 	len = snprintf((char *)buffer, preferred_size, 
-	"{\"bt\": \"%d\", \"bn\" : \"temperature\", \"e\" : [ {\"v\" : \"%d\", \"t\" : \"0\"}, {\"v\" : \"%d\", \"t\" : \"0\"} ]}", 0,  val, val);
+	"{\"bt\": \"%d\", \"bn\" : \"temperature\", \"bu\" : \"° C\",\"e\" : [ {\"v\" : \"%d\", \"t\" : \"0\"}, {\"v\" : \"%d\", \"t\" : \"0\"} ]}", 0,  val, val);
 	len = (preferred_size < len) ? preferred_size : len;
   
   	coap_set_payload(response, buffer, len);
