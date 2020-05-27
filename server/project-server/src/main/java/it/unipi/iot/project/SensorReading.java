@@ -44,7 +44,7 @@ public class SensorReading {
 			float val = Float.parseFloat(record.get("v").toString());
 			int time = Integer.parseInt((String) record.getOrDefault("t", "0").toString());
 			String um = record.getOrDefault("u", base_um).toString();
-			String name = record.getOrDefault("u", "").toString();
+			String name = record.getOrDefault("n", "").toString();
 			
 			ret[i] = new SensorReading(base_name + name, base_time + time, val, um, sens);
 		}

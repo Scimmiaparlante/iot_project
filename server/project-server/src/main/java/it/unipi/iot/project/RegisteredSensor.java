@@ -7,7 +7,7 @@ import org.eclipse.californium.core.CoapObserveRelation;
 public class RegisteredSensor extends RegisteredNode {
 	
 	public enum SensorType {
-		TEMPERATURE, HEARTBEAT
+		TEMPERATURE, HEARTBEAT, BLOODPRESSURE
 	}
 	
 	public SensorType type;

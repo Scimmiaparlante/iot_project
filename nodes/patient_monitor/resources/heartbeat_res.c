@@ -6,7 +6,6 @@
 #define LOG_MODULE "HEARTBEAT_RES"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
-#define MIME_APPLICATION_JSON	(50)
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_event_handler(void);
@@ -26,7 +25,7 @@ float heartbeat[3] = {65, 65, 65};
 static int readHeartBeat(int prev_measurement) 
 {
 	//the first piece is to randomize the sign
-	return ( prev_measurement + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 200)) / 100 ) );
+	return ( prev_measurement + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 100)) / 300 ) );
 }		 
 
 
@@ -52,11 +51,10 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 	
 	coap_set_header_content_format(response, TEXT_PLAIN);
 	
-	
 	len = snprintf((char *)buffer, preferred_size, 
 			"{\"bt\": \"%lu\", \"bn\" : \"heartbeat\", \"bu\" : \"bpm\","
-			"\"e\" : [ {\"v\" : \"%f\", \"t\" : \"-2\"}, {\"v\" : \"%f\", \"t\" : \"-1\"}, {\"v\" : \"%f\", \"t\" : \"0\"} ]}", 
-			clock_seconds(), heartbeat[0], heartbeat[1], heartbeat[2]);
+			"\"e\" : [ {\"v\" : \"%d\", \"t\" : \"-2\"}, {\"v\" : \"%d\", \"t\" : \"-1\"}, {\"v\" : \"%d\", \"t\" : \"0\"} ]}", 
+			clock_seconds(), (int)heartbeat[0], (int)heartbeat[1], (int)heartbeat[2]);
 			
 	len = (preferred_size < len) ? preferred_size : len;
   

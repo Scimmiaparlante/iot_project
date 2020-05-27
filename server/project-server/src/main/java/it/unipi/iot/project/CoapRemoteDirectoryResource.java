@@ -99,7 +99,7 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		}
 		
 		exchange.respond(ResponseCode.CHANGED);
-		printDebug("Registration successful from " + addr.toString());
+		printDebug("Registration successful from " + addr.toString() + " for " + subtype);
 	}
 	
 	
@@ -133,7 +133,10 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 			break;
 		case "heartbeat":
 			type_enum = SensorType.HEARTBEAT;
-			break;			
+			break;
+		case "bloodpressure":
+			type_enum = SensorType.BLOODPRESSURE;
+			break;
 		default:
 			return 1;
 		}
