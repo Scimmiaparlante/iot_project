@@ -134,15 +134,15 @@ public class ControlApplication {
 		
 		rule_actions = new IRuleAction[] {
 				
-				//RULE #1
+				//RULE #1 - FIRE ALARM ACTIVATION
 				new IRuleAction() {
 					
-					@Override public String getName() { return "Example rule"; }
-					@Override public ActuatorType getActuatorType() { return ActuatorType.ALARM; }
-					@Override public SensorType getSensorType() { return SensorType.TEMPERATURE; }
+					@Override public String getName() { return "Fire-alarm trigger rule"; }
+					@Override public ActuatorType getActuatorType() { return ActuatorType.FIREALARM; }
+					@Override public SensorType getSensorType() { return SensorType.FIRE; }
 					
 					@Override public IActuatorAction check(float input) {
-						if(input > 28) { return AlarmAction.ON; }
+						if(input == 1) { return AlarmAction.ON; }
 						return null;
 					}
 				},			

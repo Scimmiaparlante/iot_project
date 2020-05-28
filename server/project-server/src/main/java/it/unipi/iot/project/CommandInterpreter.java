@@ -185,6 +185,7 @@ public class CommandInterpreter {
 			
 			switch (act.type) {
 			case ALARM:
+			case FIREALARM:
 				aa = AlarmAction.valueOf(action.toUpperCase());
 				break;
 			default:

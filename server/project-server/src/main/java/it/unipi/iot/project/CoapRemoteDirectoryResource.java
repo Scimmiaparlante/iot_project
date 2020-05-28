@@ -183,10 +183,12 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		case "alarm":
 			type_enum = ActuatorType.ALARM;
 			break;
+		case "firealarm":
+			type_enum = ActuatorType.FIREALARM;
+			break;
 		default:
 			return 1;
 		}
-		
 		
 		//avoid duplicates
 		int i;
@@ -198,7 +200,6 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 			actuator_list.add(new RegisteredActuator(addr, type_enum, path));
 			Collections.sort(actuator_list);
 		}
-		
 
 		return 0;
 	}

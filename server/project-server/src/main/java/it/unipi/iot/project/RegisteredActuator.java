@@ -9,7 +9,7 @@ public class RegisteredActuator extends RegisteredNode {
 	}
 	
 	public enum ActuatorType {
-		ALARM
+		ALARM, FIREALARM
 	}
 	
 	//----- here we define the actions for each possible actuator type;
