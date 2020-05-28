@@ -186,6 +186,9 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		case "firealarm":
 			type_enum = ActuatorType.FIREALARM;
 			break;
+		case "patientalarm":
+			type_enum = ActuatorType.PATIENTALARM;
+			break;
 		default:
 			return 1;
 		}

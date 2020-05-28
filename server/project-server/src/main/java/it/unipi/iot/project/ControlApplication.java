@@ -10,6 +10,7 @@ import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import it.unipi.iot.project.RegisteredActuator.ActuatorType;
 import it.unipi.iot.project.RegisteredActuator.AlarmAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
+import it.unipi.iot.project.RegisteredActuator.PatAlarmAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
 import it.unipi.iot.project.Rules.IRuleAction;
 import it.unipi.iot.project.Rules.Rule;
@@ -126,7 +127,7 @@ public class ControlApplication {
 	
 	
 	
-	//----------Here you need to define the control rules----------ru-----------------------------------------------
+	//----------Here you need to define the control rules---------------------------------------------------------
 	
 	private void init_rules() {
 		
@@ -141,11 +142,47 @@ public class ControlApplication {
 					@Override public ActuatorType getActuatorType() { return ActuatorType.FIREALARM; }
 					@Override public SensorType getSensorType() { return SensorType.FIRE; }
 					
-					@Override public IActuatorAction check(float input) {
-						if(input == 1) { return AlarmAction.ON; }
+					@Override public IActuatorAction check(SensorReading reading) {
+						if(reading.value == 1) { return AlarmAction.ON; }
 						return null;
 					}
-				},			
+				},
+				
+				//RULE #2 - PATIENT ALARM ACTIVATION FOR HEARTBEAT
+				new IRuleAction() {
+					
+					@Override public String getName() { return "Patient-alarm for heartbeat trigger rule"; }
+					@Override public ActuatorType getActuatorType() { return ActuatorType.PATIENTALARM; }
+					@Override public SensorType getSensorType() { return SensorType.HEARTBEAT; }
+					
+					@Override public IActuatorAction check(SensorReading reading) {
+						if(reading.value > 140 || reading.value < 35) { return PatAlarmAction.LVL3; }
+						else if(reading.value > 120 || reading.value < 45) { return PatAlarmAction.LVL2; }
+						else if(reading.value > 100 || reading.value < 55) { return PatAlarmAction.LVL1; }
+						return null;
+					}
+				},
+				
+				//RULE #2 - PATIENT ALARM ACTIVATION FOR PRESSURE
+				new IRuleAction() {
+					
+					@Override public String getName() { return "Patient-alarm for pressure trigger rule"; }
+					@Override public ActuatorType getActuatorType() { return ActuatorType.PATIENTALARM; }
+					@Override public SensorType getSensorType() { return SensorType.BLOODPRESSURE; }
+					
+					@Override public IActuatorAction check(SensorReading reading) {
+						if(reading.name.equals("pressureMin")) {
+							if(reading.value < 30) { return PatAlarmAction.LVL3; }
+							else if(reading.value < 40) { return PatAlarmAction.LVL2; }
+							else if(reading.value < 50) { return PatAlarmAction.LVL1; }
+						} else if(reading.name.equals("pressureMax")) {
+							if(reading.value > 180) { return PatAlarmAction.LVL3; }
+							else if(reading.value > 165) { return PatAlarmAction.LVL2; }
+							else if(reading.value > 150) { return PatAlarmAction.LVL1; }
+						}
+						return null;
+					}
+				},
 					
 	
 		};

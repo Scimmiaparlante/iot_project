@@ -9,7 +9,7 @@ public class RegisteredActuator extends RegisteredNode {
 	}
 	
 	public enum ActuatorType {
-		ALARM, FIREALARM
+		ALARM, FIREALARM, PATIENTALARM
 	}
 	
 	//----- here we define the actions for each possible actuator type;
@@ -18,6 +18,16 @@ public class RegisteredActuator extends RegisteredNode {
 		public String getActionCommand() {
 			if(this == ON) return "cmd=1";
 			else return "cmd=0";
+		}
+	}
+	
+	public enum PatAlarmAction implements IActuatorAction {
+		RESET, LVL1, LVL2, LVL3;
+		public String getActionCommand() {
+			if(this == RESET) return "lvl=0";
+			else if(this == LVL1) return "lvl=1";
+			else if(this == LVL2) return "lvl=2";
+			else return "lvl=3";
 		}
 	}
 	//-----------------------------------------------------------------

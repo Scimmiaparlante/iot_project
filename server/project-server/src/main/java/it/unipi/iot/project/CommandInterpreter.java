@@ -8,6 +8,7 @@ import java.util.Scanner;
 import it.unipi.iot.project.ControlApplication.ActuationResult;
 import it.unipi.iot.project.RegisteredActuator.AlarmAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
+import it.unipi.iot.project.RegisteredActuator.PatAlarmAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
 import it.unipi.iot.project.Rules.IRuleAction;
 import it.unipi.iot.project.Rules.Rule;
@@ -187,6 +188,9 @@ public class CommandInterpreter {
 			case ALARM:
 			case FIREALARM:
 				aa = AlarmAction.valueOf(action.toUpperCase());
+				break;
+			case PATIENTALARM:
+				aa = PatAlarmAction.valueOf(action.toUpperCase());
 				break;
 			default:
 				return;
