@@ -61,7 +61,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 	
 	
 	len = snprintf((char *)buffer, preferred_size, 
-			"{\"bt\": \"%lu\", \"bn\" : \"bloodpressure\", \"bu\" : \"mmHg\","
+			"{\"bt\": \"%lu\", \"bn\" : \"pressure\", \"bu\" : \"mmHg\","
 			"\"e\" : [ {\"n\": \"Min\", \"v\" : \"%d\", \"t\" : \"-2\"}, {\"n\": \"Max\", \"v\" : \"%d\", \"t\" : \"-2\"}, {\"n\": \"Min\", \"v\" : \"%d\", \"t\" : \"-1\"},"
 			"{\"n\": \"Max\", \"v\" : \"%d\", \"t\" : \"-1\"}, {\"n\": \"Min\", \"v\" : \"%d\", \"t\" : \"0\"}, {\"n\": \"Max\", \"v\" : \"%d\", \"t\" : \"0\"} ]}", 
 			clock_seconds(), (int)pressure[0].min, (int)pressure[0].max, (int)pressure[1].min, (int)pressure[1].max, (int)pressure[2].min, (int)pressure[2].max);
