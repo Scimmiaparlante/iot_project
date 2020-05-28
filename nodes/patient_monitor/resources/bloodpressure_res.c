@@ -19,30 +19,37 @@ EVENT_RESOURCE(bloodpressure_res,
          NULL, 
 		 res_event_handler);
 
+
 struct bloodpressure_t {
 	float min;
 	float max;
-}  pressure[3] = {{80,110}, {80,110}, {80,110}};
-
+};
 		 
-static struct bloodpressure_t readBloodpressure(struct bloodpressure_t prev_meas) 
+//------------------------------ I/O EMULATION ----------------------------------------------------
+		 
+static struct bloodpressure_t readBloodpressure() 
 {
-	struct bloodpressure_t ret;
+	static struct bloodpressure_t pressure = {80,110};
 	
 	//the first piece is to randomize the sign
-	ret.max = ( prev_meas.max + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 200)) / 100 ) );
-	ret.min = ( prev_meas.min + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 200)) / 100 ) );
+	pressure.max = ( pressure.max + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 100)) / 100 ) );
+	pressure.min = ( pressure.min + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 100)) / 100 ) );
 	
-	return ret;
-}		 
+	return pressure;
+}
+
+//-------------------------- END I/O EMULATION -------------------------------------------------------
+
+
+struct bloodpressure_t pressure[3];
 
 
 static void res_event_handler(void)
 {
 	//3 fake measurements (we pretend these are the measurements of the last 3 seconds)
-	pressure[0] = readBloodpressure(pressure[2]);
-	pressure[1] = readBloodpressure(pressure[0]);
-	pressure[2] = readBloodpressure(pressure[1]);
+	pressure[0] = readBloodpressure();
+	pressure[1] = readBloodpressure();
+	pressure[2] = readBloodpressure();
 
 	LOG_INFO("Notifying everyone\n");
 	

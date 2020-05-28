@@ -34,7 +34,6 @@ static float readTemperature()
 	static float old_temp = 20;
 	float ret;
 
-
 	//if button pressed, cycle through the states
 	if (n_button_press > 0)		
 		temp_state = (temp_state + n_button_press) % 3;

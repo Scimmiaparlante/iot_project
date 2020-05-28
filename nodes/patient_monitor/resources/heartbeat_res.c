@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "coap-engine.h"
+#include "os/dev/button-hal.h"
 
 #include "sys/log.h"
 #define LOG_MODULE "HEARTBEAT_RES"
@@ -18,23 +19,49 @@ EVENT_RESOURCE(heartbeat_res,
          NULL,
          NULL, 
 		 res_event_handler);
+		 
+//------------------------------ I/O EMULATION ----------------------------------------------------
 
+extern button_hal_button_t* btn;
+extern uint8_t n_button_press;
+
+enum {NORMAL, TACHYCARDIA, BRADYCARDIA} heartbeat_state = NORMAL;
+
+float heartbeat[3];		 
 		 
-float heartbeat[3] = {65, 65, 65};		 
-		 
-static int readHeartBeat(int prev_measurement) 
-{
-	//the first piece is to randomize the sign
-	return ( prev_measurement + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 100)) / 300 ) );
-}		 
+static int readHeartBeat() 
+{	
+	static float old_hb = 65;
+	
+	float ret;
+	
+	//if button pressed, cycle through the states
+	if (n_button_press > 0)		
+		heartbeat_state = (heartbeat_state + n_button_press) % 3;
+	
+	n_button_press = 0;
+	
+	if (heartbeat_state == NORMAL) {
+		ret = ( old_hb + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 100)) / 300 ) );
+		old_hb = ret;
+	}
+	else if (heartbeat_state == TACHYCARDIA)
+		ret = 150;
+	else
+		ret = 10;			//"LO STIAMO PERDENDO!!!"
+	
+	return ret;
+}
+
+//-------------------------- END I/O EMULATION -------------------------------------------------------
 
 
 static void res_event_handler(void)
 {
 	//3 fake measurements (we pretend these are the measurements of the last 3 seconds)
-	heartbeat[0] = readHeartBeat(heartbeat[2]);
-	heartbeat[1] = readHeartBeat(heartbeat[0]);
-	heartbeat[2] = readHeartBeat(heartbeat[1]);
+	heartbeat[0] = readHeartBeat();
+	heartbeat[1] = readHeartBeat();
+	heartbeat[2] = readHeartBeat();
 
 	LOG_INFO("Notifying everyone\n");
 	

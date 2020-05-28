@@ -4,6 +4,7 @@
 #include "coap-engine.h"
 #include "coap-blocking-api.h"
 #include "coap-constants.h"
+#include "os/dev/button-hal.h"
 
 /* Log configuration */
 #include "sys/log.h"
@@ -17,6 +18,10 @@
 // Server IP and resource path
 #define SERVER_EP "coap://[fd00::1]:5683"
 
+//---------------- I/O DEVICES -------------------------
+button_hal_button_t* btn; 
+uint8_t n_button_press = 0;
+//------------------------------------------------------
 
 //---------------- RESOURCES LIST ----------------------
 extern coap_resource_t heartbeat_res;
@@ -171,7 +176,9 @@ PROCESS_THREAD(bloodpressure_registration_process, ev, data)
 /* ---------------------------------------------------------------------------
  * --------------------------- SERVER PROCESS --------------------------------
  * -------------------------------------------------------------------------*/
- 
+
+
+
 PROCESS_THREAD(server_process, ev, data) 
 {
 	static struct etimer periodic_timer;
@@ -184,6 +191,9 @@ PROCESS_THREAD(server_process, ev, data)
 	clock_init();
 	srand(clock_time());
 	
+	button_hal_init();
+	btn = button_hal_get_by_index(0);
+	
 	// Activation of a resource
 	coap_activate_resource(&heartbeat_res, "heartbeat");	
 	coap_activate_resource(&bloodpressure_res, "bloodpressure");
@@ -191,10 +201,14 @@ PROCESS_THREAD(server_process, ev, data)
   	LOG_INFO("Coap server started!\n");
 
 	while(1) {
-   		PROCESS_WAIT_EVENT_UNTIL(ev == PROCESS_EVENT_TIMER && data == &periodic_timer);
+   		PROCESS_WAIT_EVENT_UNTIL((ev == PROCESS_EVENT_TIMER && data == &periodic_timer) || ev == button_hal_press_event);
 
-	  	heartbeat_res.trigger();
-	  	bloodpressure_res.trigger();	  	
+		if(ev == button_hal_press_event)
+			n_button_press++;
+		else {
+	  		heartbeat_res.trigger();
+	  		bloodpressure_res.trigger();
+	  	} 	
 	  	
 	  	etimer_reset(&periodic_timer);
 	}

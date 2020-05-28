@@ -19,7 +19,8 @@
 #define SERVER_EP "coap://[fd00::1]:5683"
 
 //---------------- I/O DEVICES -------------------------
-button_hal_button_t* btn; 
+button_hal_button_t* btn;
+uint8_t n_button_press = 0;
 //------------------------------------------------------
 
 
@@ -108,8 +109,7 @@ PROCESS_THREAD(temp_registration_process, ev, data)
 /* ---------------------------------------------------------------------------
  * --------------------------- SERVER PROCESS --------------------------------
  * -------------------------------------------------------------------------*/
- 
-uint8_t n_button_press = 0;
+
  
 PROCESS_THREAD(server_process, ev, data) 
 {
