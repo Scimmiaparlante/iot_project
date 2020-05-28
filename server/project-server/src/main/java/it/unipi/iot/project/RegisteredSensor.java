@@ -18,4 +18,9 @@ public class RegisteredSensor extends RegisteredNode {
 		this.type = _type;
 		this.coap_rel = rel;
 	}
+	
+	public String toString() 
+	{
+		return "TYPE: " + type.toString() + " - " + super.toString();
+	}
 }

@@ -29,5 +29,10 @@ public class RegisteredActuator extends RegisteredNode {
 		super(addr, path);
 	
 		this.type = _type;
-	}	
+	}
+	
+	public String toString() 
+	{
+		return "TYPE: " + type.toString() + " - " + super.toString();
+	}
 }
