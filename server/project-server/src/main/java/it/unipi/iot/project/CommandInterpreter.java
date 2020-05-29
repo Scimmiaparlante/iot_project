@@ -3,9 +3,11 @@ package it.unipi.iot.project;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import it.unipi.iot.project.ControlApplication.ActuationResult;
+import it.unipi.iot.project.RegisteredActuator.ActuatorType;
 import it.unipi.iot.project.RegisteredActuator.AlarmAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
@@ -73,6 +75,9 @@ public class CommandInterpreter {
 		case "script":
 			commandScript(words);
 			break;
+		case "commands":
+			commandCommands(words);
+			break;
 		case "":
 			break;
 		case "help":
@@ -94,6 +99,7 @@ public class CommandInterpreter {
 		System.out.println("apply <rule_num> <sensor_num> <actuator_num> \t apply the specified rule to the specified sensor and actuator");
 		System.out.println("unapply <applied_rule_num> \t\t\t unapply the specified rule (number from the \"rules applied\" command)");
 		System.out.println("script <file> \t\t\t\t\t execute the commands inside the specified file automatically");
+		System.out.println("commands \t\t\t\t\t display the available commands for each actuator type");
 		System.out.println("help \t\t\t\t\t\t display this message");
 		System.out.println("exit \t\t\t\t\t\t terminate the program");
 		System.out.print("--------------------------------------------------------------------------------------");
@@ -277,6 +283,12 @@ public class CommandInterpreter {
 		}
 		
 		System.out.print("Script completed!");
+	}
+	
+	
+	private static void commandCommands(String[] words)
+	{
+		System.out.println(ActuatorType.ALARM.toString() + " -> " + Arrays.toString(AlarmAction.values()));
 	}
 	
 	
