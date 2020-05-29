@@ -70,7 +70,7 @@ PROCESS_THREAD(heartbeat_registration_process, ev, data)
 	static coap_endpoint_t server_ep;
 	static coap_message_t request[1];
 	static struct etimer periodic_timer;
-	char resource_path[] = "/remote_dir";
+	static char resource_path[] = "/remote_dir";
 	
   	PROCESS_BEGIN();
 
@@ -136,7 +136,7 @@ PROCESS_THREAD(bloodpressure_registration_process, ev, data)
 	static coap_endpoint_t server_ep;
 	static coap_message_t request[1];
 	static struct etimer periodic_timer;
-	char resource_path[] = "/remote_dir";
+	static char resource_path[] = "/remote_dir";
 	
   	PROCESS_BEGIN();
 
