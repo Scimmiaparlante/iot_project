@@ -294,6 +294,8 @@ public class CommandInterpreter {
 	private static void commandCommands(String[] words)
 	{
 		System.out.println(ActuatorType.ALARM.toString() + " -> " + Arrays.toString(AlarmAction.values()));
+		System.out.println(ActuatorType.FIREALARM.toString() + " -> " + Arrays.toString(AlarmAction.values()));
+		System.out.println(ActuatorType.PATIENTALARM.toString() + " -> " + Arrays.toString(PatAlarmAction.values()));
 	}
 	
 	
