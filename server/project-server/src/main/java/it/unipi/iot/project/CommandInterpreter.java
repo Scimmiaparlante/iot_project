@@ -209,7 +209,7 @@ public class CommandInterpreter {
 				return;
 			}
 
-			res = app.setActuation(act, aa);			
+			res = app.setActuation(act, aa, "CLI");			
 			
 		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
 			System.out.print("Bad actuator action");
