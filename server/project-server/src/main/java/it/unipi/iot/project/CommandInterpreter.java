@@ -9,6 +9,7 @@ import java.util.Scanner;
 import it.unipi.iot.project.ControlApplication.ActuationResult;
 import it.unipi.iot.project.RegisteredActuator.ActuatorType;
 import it.unipi.iot.project.RegisteredActuator.AlarmAction;
+import it.unipi.iot.project.RegisteredActuator.DashboardAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredActuator.PatAlarmAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
@@ -52,6 +53,7 @@ public class CommandInterpreter {
 		if(words.length < 1)
 			return true;
 		
+		//see commandHelp() for details
 		switch (words[0]) {
 		case "exit":
 			return false;
@@ -95,7 +97,7 @@ public class CommandInterpreter {
 		System.out.println("The available commands are:");
 		System.out.println("list [sensors | actuators] \t\t\t show a list of the nodes (or sensors/actuators only) and their number");
 		System.out.println("read [<sensor_type>] [-t <timestamp>] \t\t show the readings of the sensors (filter by type and min time)");
-		System.out.println("set <res_number> <value> \t\t\t set the resource <res_number> with value <value>");
+		System.out.println("set <res_number> <value> [params] \t\t set resource <res_number> with value <value>. Parameters depend on type");
 		System.out.println("rules [applied] \t\t\t\t list the existing (or applied) rules");
 		System.out.println("apply <rule_num> <sensor_num> <actuator_num> \t apply the specified rule to the specified sensor and actuator");
 		System.out.println("unapply <applied_rule_num> \t\t\t unapply the specified rule (number from the \"rules applied\" command)");
@@ -198,6 +200,11 @@ public class CommandInterpreter {
 			case PATIENTALARM:
 				aa = PatAlarmAction.valueOf(action.toUpperCase());
 				break;
+			case DASHBOARD:
+				DashboardAction da = DashboardAction.valueOf(action.toUpperCase());
+				da.val = Integer.parseInt(words[3]);
+				aa = da;
+				break;
 			default:
 				return;
 			}
@@ -296,6 +303,7 @@ public class CommandInterpreter {
 		System.out.println(ActuatorType.ALARM.toString() + " -> " + Arrays.toString(AlarmAction.values()));
 		System.out.println(ActuatorType.FIREALARM.toString() + " -> " + Arrays.toString(AlarmAction.values()));
 		System.out.println(ActuatorType.PATIENTALARM.toString() + " -> " + Arrays.toString(PatAlarmAction.values()));
+		System.out.println(ActuatorType.DASHBOARD.toString() + " -> " + Arrays.toString(DashboardAction.values()) + " <sensor_value>");
 	}
 	
 	

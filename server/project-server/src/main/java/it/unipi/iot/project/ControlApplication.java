@@ -9,6 +9,7 @@ import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
 import it.unipi.iot.project.RegisteredActuator.ActuatorType;
 import it.unipi.iot.project.RegisteredActuator.AlarmAction;
+import it.unipi.iot.project.RegisteredActuator.DashboardAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredActuator.PatAlarmAction;
 import it.unipi.iot.project.RegisteredSensor.SensorType;
@@ -163,7 +164,7 @@ public class ControlApplication {
 					}
 				},
 				
-				//RULE #2 - PATIENT ALARM ACTIVATION FOR PRESSURE
+				//RULE #3 - PATIENT ALARM ACTIVATION FOR PRESSURE
 				new IRuleAction() {
 					
 					@Override public String getName() { return "Patient-alarm for pressure trigger rule"; }
@@ -180,6 +181,37 @@ public class ControlApplication {
 							else if(reading.value > 165) { return PatAlarmAction.LVL2; }
 							else if(reading.value > 150) { return PatAlarmAction.LVL1; }
 						}
+						return null;
+					}
+				},
+				
+				//RULE #4 - DASHBOARD MESSAGES FOR PRESSURE
+				new IRuleAction() {
+					
+					@Override public String getName() { return "Dashboard messages for pressure sensors"; }
+					@Override public ActuatorType getActuatorType() { return ActuatorType.DASHBOARD; }
+					@Override public SensorType getSensorType() { return SensorType.BLOODPRESSURE; }
+					
+					@Override public IActuatorAction check(SensorReading reading) {
+						if(reading.name.equals("pressureMin")) {
+							if(reading.value < 50) { DashboardAction r = DashboardAction.MINPRESS_LOW; r.val = reading.value; return r; }
+						} else if(reading.name.equals("pressureMax")) {
+							if(reading.value > 150) { DashboardAction r = DashboardAction.MAXPRESS_HIGH; r.val = reading.value; return r; }
+						}
+						return null;
+					}
+				},
+				
+				//RULE #5 - DASHBOARD MESSAGES FOR HEARTBEAT
+				new IRuleAction() {
+					
+					@Override public String getName() { return "Dashboard messages for heartbeat sensors"; }
+					@Override public ActuatorType getActuatorType() { return ActuatorType.DASHBOARD; }
+					@Override public SensorType getSensorType() { return SensorType.HEARTBEAT; }
+					
+					@Override public IActuatorAction check(SensorReading reading) {
+						if(reading.value > 100) { DashboardAction r = DashboardAction.HB_HIGH; r.val = reading.value; return r; }
+						else if(reading.value < 55) { DashboardAction r = DashboardAction.HB_LOW; r.val = reading.value; return r; }
 						return null;
 					}
 				},
