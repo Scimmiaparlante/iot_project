@@ -27,7 +27,7 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
 	LOG_INFO("Handling post request\n");
 	
 	coap_set_header_content_format(response, TEXT_PLAIN);
-	response->code = CHANGED_2_04;
+	response->code = BAD_REQUEST_4_00;
 	
 	size_t len = 0;
 	const char* command;
@@ -38,8 +38,8 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
 			firealarm_on = 1;
 		else if (*command == '0')
 			firealarm_on = 0;
-		else
-			response->code = BAD_REQUEST_4_00;
+
+		response->code = CHANGED_2_04;
 	}
 	
 	leds_set(firealarm_on * LEDS_NUM_TO_MASK(LEDS_CONF_RED));

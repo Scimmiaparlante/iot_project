@@ -2,7 +2,6 @@
 #include <string.h>
 #include "coap-engine.h"
 #include "coap-constants.h"
-#include "os/dev/leds.h"
 
 #include "sys/log.h"
 #define LOG_MODULE "DASHBOARD_RES"
@@ -17,7 +16,7 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
 
 
 RESOURCE(dashboard_res,
-         "title=\"fdashboard\";rt=\"Text\"",
+         "title=\"dashboard\";rt=\"Text\"",
          NULL,
          res_post_handler,
          NULL,

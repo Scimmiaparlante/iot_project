@@ -29,7 +29,7 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
 	LOG_INFO("Handling post request\n");
 	
 	coap_set_header_content_format(response, TEXT_PLAIN);
-	response->code = CHANGED_2_04;
+	response->code = BAD_REQUEST_4_00;
 	
 	size_t len = 0;
 	const char* command;
@@ -44,8 +44,8 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
 			patientalarm_level = max(2, patientalarm_level);
 		else if (*command == '3')
 			patientalarm_level = max(3, patientalarm_level);
-		else
-			response->code = BAD_REQUEST_4_00;
+
+		response->code = CHANGED_2_04;
 	}
 	
 	if(patientalarm_level == 0)

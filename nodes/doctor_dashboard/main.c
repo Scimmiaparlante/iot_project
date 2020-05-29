@@ -7,7 +7,7 @@
 
 /* Log configuration */
 #include "sys/log.h"
-#define LOG_MODULE "DASBOARD"
+#define LOG_MODULE "DASHBOARD"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
 #define REG_SEND_INTERVAL 			(3*CLOCK_SECOND)
