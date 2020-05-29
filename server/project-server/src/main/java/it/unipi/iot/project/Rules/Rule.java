@@ -3,6 +3,7 @@ package it.unipi.iot.project.Rules;
 import it.unipi.iot.project.RegisteredActuator;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
 import it.unipi.iot.project.RegisteredSensor;
+import it.unipi.iot.project.SensorReading;
 
 public class Rule {
 	
@@ -19,9 +20,9 @@ public class Rule {
 	}
 	
 	
-	public IActuatorAction check(float input)
+	public IActuatorAction check(SensorReading reading)
 	{
-		return action.check(input);
+		return action.check(reading);
 	}
 	
 	public String toString()

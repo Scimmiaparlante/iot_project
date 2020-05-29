@@ -126,7 +126,7 @@ public class ControlApplication {
 	
 	
 	
-	//----------Here you need to define the control rules----------ru-----------------------------------------------
+	//----------Here you need to define the control rules---------------------------------------------------------
 	
 	private void init_rules() {
 		
@@ -141,8 +141,8 @@ public class ControlApplication {
 					@Override public ActuatorType getActuatorType() { return ActuatorType.ALARM; }
 					@Override public SensorType getSensorType() { return SensorType.TEMPERATURE; }
 					
-					@Override public IActuatorAction check(float input) {
-						if(input > 28) { return AlarmAction.ON; }
+					@Override public IActuatorAction check(SensorReading reading) {
+						if(reading.value > 28) { return AlarmAction.ON; }
 						return null;
 					}
 				},			
