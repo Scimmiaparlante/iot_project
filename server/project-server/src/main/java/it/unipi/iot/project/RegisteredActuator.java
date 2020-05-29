@@ -9,7 +9,7 @@ public class RegisteredActuator extends RegisteredNode {
 	}
 	
 	public enum ActuatorType {
-		ALARM, FIREALARM, PATIENTALARM, DASHBOARD
+		ALARM, FIREALARM, PATIENTALARM, DASHBOARD, AIRCOND
 	}
 	
 	//----- here we define the actions for each possible actuator type;
@@ -42,6 +42,15 @@ public class RegisteredActuator extends RegisteredNode {
 			else if(this == MINPRESS_LOW) return "msg=DIASTOLIC PRESSURE TOO LOW" + ret;
 			else if(this == MAXPRESS_HIGH) return "msg=SYSTOLIC PRESSURE TOO HIGH" + ret;
 			else /*if(this == MAXPRESS_LOW)*/ return "msg=SYSTOLIC PRESSURE TOO LOW" + ret;
+		}
+	}
+	
+	public enum AircondAction implements IActuatorAction {
+		OFF, HOT, COLD;
+		public String getActionCommand() {
+			if(this == HOT) return "cmd=1";
+			else if(this == COLD) return "cmd=2";
+			else return "cmd=0";
 		}
 	}
 	//-----------------------------------------------------------------

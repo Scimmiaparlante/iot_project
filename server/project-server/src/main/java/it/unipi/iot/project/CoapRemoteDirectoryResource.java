@@ -192,6 +192,9 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		case "dashboard":
 			type_enum = ActuatorType.DASHBOARD;
 			break;
+		case "aircond":
+			type_enum = ActuatorType.AIRCOND;
+			break;
 		default:
 			return 1;
 		}

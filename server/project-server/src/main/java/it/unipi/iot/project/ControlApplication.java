@@ -8,6 +8,7 @@ import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
 import it.unipi.iot.project.RegisteredActuator.ActuatorType;
+import it.unipi.iot.project.RegisteredActuator.AircondAction;
 import it.unipi.iot.project.RegisteredActuator.AlarmAction;
 import it.unipi.iot.project.RegisteredActuator.DashboardAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
@@ -216,7 +217,19 @@ public class ControlApplication {
 					}
 				},
 					
-	
+				//RULE #6 - AIR CONDITIONING BASED ON TEMPERATURET
+				new IRuleAction() {
+					
+					@Override public String getName() { return "Air conditioning activation"; }
+					@Override public ActuatorType getActuatorType() { return ActuatorType.AIRCOND; }
+					@Override public SensorType getSensorType() { return SensorType.TEMPERATURE; }
+					
+					@Override public IActuatorAction check(SensorReading reading) {
+						if(reading.value > 26) { return AircondAction.COLD;}
+						else if(reading.value < 15) { return AircondAction.HOT;}
+						return AircondAction.OFF;
+					}
+				},
 		};
 		
 	}

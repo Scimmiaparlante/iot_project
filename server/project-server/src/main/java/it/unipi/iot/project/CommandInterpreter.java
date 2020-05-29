@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import it.unipi.iot.project.ControlApplication.ActuationResult;
 import it.unipi.iot.project.RegisteredActuator.ActuatorType;
+import it.unipi.iot.project.RegisteredActuator.AircondAction;
 import it.unipi.iot.project.RegisteredActuator.AlarmAction;
 import it.unipi.iot.project.RegisteredActuator.DashboardAction;
 import it.unipi.iot.project.RegisteredActuator.IActuatorAction;
@@ -205,6 +206,9 @@ public class CommandInterpreter {
 				da.val = Integer.parseInt(words[3]);
 				aa = da;
 				break;
+			case AIRCOND:
+				aa = AircondAction.valueOf(action.toUpperCase());
+				break;
 			default:
 				return;
 			}
@@ -304,6 +308,7 @@ public class CommandInterpreter {
 		System.out.println(ActuatorType.FIREALARM.toString() + " -> " + Arrays.toString(AlarmAction.values()));
 		System.out.println(ActuatorType.PATIENTALARM.toString() + " -> " + Arrays.toString(PatAlarmAction.values()));
 		System.out.println(ActuatorType.DASHBOARD.toString() + " -> " + Arrays.toString(DashboardAction.values()) + " <sensor_value>");
+		System.out.println(ActuatorType.AIRCOND.toString() + " -> " + Arrays.toString(AircondAction.values()));
 	}
 	
 	
