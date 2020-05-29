@@ -106,7 +106,7 @@ public class CommandInterpreter {
 		System.out.println("commands \t\t\t\t\t display the available commands for each actuator type");
 		System.out.println("help \t\t\t\t\t\t display this message");
 		System.out.println("exit \t\t\t\t\t\t terminate the program");
-		System.out.print("--------------------------------------------------------------------------------------");
+		System.out.println("--------------------------------------------------------------------------------------");
 	}
 	
 	
@@ -148,14 +148,14 @@ public class CommandInterpreter {
 					min_time = Integer.parseInt(words[i+1]);
 					words_left--; i++;
 				} catch (NumberFormatException  e) {
-					System.out.print("Bad time format, use a timestamp");
+					System.out.println("Bad time format, use a timestamp");
 					return;
 				}
 			} else {	//I'm in this case also if there's only '-t'. Not an issue for the moment.
 				try {
 					type = SensorType.valueOf(words[i].toUpperCase());
 				} catch (IllegalArgumentException e) {
-					System.out.print("Bad sensor type");
+					System.out.println("Bad sensor type");
 					return;
 				}
 			}
@@ -183,7 +183,7 @@ public class CommandInterpreter {
 			act = app.remoteDir_res.actuator_list.get(act_num);
 			
 		} catch (NumberFormatException | IndexOutOfBoundsException  e) {
-			System.out.print("Bad actuator number");
+			System.out.println("Bad actuator number");
 			return;
 		}
 		
@@ -216,12 +216,12 @@ public class CommandInterpreter {
 			res = app.setActuation(act, aa, "CLI");			
 			
 		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-			System.out.print("Bad actuator action");
+			System.out.println("Bad actuator action");
 			return;
 		}
 		
 		if(res != ActuationResult.SUCCESS)
-			System.out.print("Something went wrong during the actuation");
+			System.out.println("Something went wrong during the actuation");
 	}
 	
 	private static void commandRules(String[] words) 
@@ -257,16 +257,16 @@ public class CommandInterpreter {
 			actuator = app.remoteDir_res.actuator_list.get(Integer.parseInt(words[3]));
 			
 		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-			System.out.print("Bad command: specify the 3 numbers correctly");
+			System.out.println("Bad command: specify the 3 numbers correctly");
 			return;
 		}
 		
 		boolean success = app.setRule(sensor, actuator, rule_act);
 		
 		if(success)
-			System.out.print("Rule applied successfully");
+			System.out.println("Rule applied successfully");
 		else
-			System.out.print("Rule application failed");
+			System.out.println("Rule application failed");
 	}
 	
 	private static void commandUnapply(String[] words) 
@@ -275,7 +275,7 @@ public class CommandInterpreter {
 			app.rules.remove(Integer.parseInt(words[1]));
 			
 		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-			System.out.print("Bad index: specify the index correctly");
+			System.out.println("Bad index: specify the index correctly");
 			return;
 		}
 	}
@@ -295,10 +295,10 @@ public class CommandInterpreter {
 	        sc.close();
 			
 		} catch (FileNotFoundException | IndexOutOfBoundsException e) {
-			System.out.print("Bad file name");
+			System.out.println("Bad file name");
 		}
 		
-		System.out.print("Script completed!");
+		System.out.println("Script completed!");
 	}
 	
 	

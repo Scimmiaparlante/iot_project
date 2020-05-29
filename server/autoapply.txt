@@ -1,1 +1,6 @@
-apply 0 0 0
+apply 0 3 0
+apply 1 1 1
+apply 2 0 1
+apply 3 0 2
+apply 4 1 2
+apply 5 2 3
