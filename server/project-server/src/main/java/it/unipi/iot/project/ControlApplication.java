@@ -95,11 +95,11 @@ public class ControlApplication {
 	}
 	
 	
-	public ActuationResult setActuation(RegisteredActuator actuator, IActuatorAction action) 
+	public ActuationResult setActuation(RegisteredActuator actuator, IActuatorAction action, String origin) 
 	{
 		CoapClient client = new CoapClient("coap://[" + actuator.node_address.toString().substring(1) + "]/" + actuator.resource_path);
 
-		CoapResponse response = client.post(action.getActionCommand(), MediaTypeRegistry.TEXT_PLAIN);
+		CoapResponse response = client.post(action.getActionCommand() + "&or=" + origin, MediaTypeRegistry.TEXT_PLAIN);
 
 		if(response == null || !response.isSuccess())
 			return ActuationResult.FAILURE;

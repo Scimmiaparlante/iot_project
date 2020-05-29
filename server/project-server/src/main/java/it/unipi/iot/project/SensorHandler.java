@@ -43,9 +43,10 @@ public class SensorHandler implements CoapHandler {
 					
 					final Rule fr = r;
 					final IActuatorAction command = r.check(sr);
+					final String origin = sr.sensor.node_address.toString().substring(1);
 					if(command != null) {
 						//run in a separate thread, otherwise the post call hangs
-						Thread t = new Thread() { public void run() { app.setActuation(fr.actuator, command);} };
+						Thread t = new Thread() { public void run() { app.setActuation(fr.actuator, command, origin);} };
 						t.start();
 					}
 				}
