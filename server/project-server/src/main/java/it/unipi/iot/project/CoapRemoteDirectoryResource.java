@@ -168,8 +168,10 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 			SensorHandler handler = new SensorHandler(app, sensor);
 			relation = client.observe(handler);
 			
-			sensor_list.add(sensor);
-			Collections.sort(sensor_list);
+			synchronized (sensor_list) {
+				sensor_list.add(sensor);
+				Collections.sort(sensor_list);
+			}
 		}
 
 		return 0;
@@ -207,8 +209,10 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 				break;
 		
 		if (i == actuator_list.size()) {
-			actuator_list.add(new RegisteredActuator(addr, type_enum, path));
-			Collections.sort(actuator_list);
+			synchronized (actuator_list) {
+				actuator_list.add(new RegisteredActuator(addr, type_enum, path));
+				Collections.sort(actuator_list);
+			}
 		}
 
 		return 0;
