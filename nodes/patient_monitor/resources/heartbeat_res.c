@@ -63,7 +63,7 @@ static void res_event_handler(void)
 	heartbeat[1] = readHeartBeat();
 	heartbeat[2] = readHeartBeat();
 
-	LOG_INFO("Notifying everyone\n");
+	LOG_DBG("Notifying everyone\n");
 	
     // Notify all the observers
     coap_notify_observers(&heartbeat_res);
@@ -74,7 +74,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 {
 	int len;
 	
-//	LOG_INFO("Handling get request\n");
+	LOG_DBG("Handling get request\n");
 	
 	coap_set_header_content_format(response, TEXT_PLAIN);
 	

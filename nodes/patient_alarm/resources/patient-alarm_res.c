@@ -26,7 +26,7 @@ RESOURCE(patientalarm_res,
 
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
-	LOG_INFO("Handling post request\n");
+	LOG_DBG("Handling post request\n");
 	
 	coap_set_header_content_format(response, TEXT_PLAIN);
 	response->code = BAD_REQUEST_4_00;

@@ -74,7 +74,7 @@ static void res_event_handler(void)
 	//DO THINGS
 	temp = readTemperature();
 	
-	LOG_INFO("Notifying everyone\n");
+	LOG_DBG("Notifying everyone\n");
 	
     // Notify all the observers
     coap_notify_observers(&temperature_res);
@@ -85,7 +85,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 {
 	int len;
 	
-	LOG_INFO("Handling get request\n");
+	LOG_DBG("Handling get request\n");
 	
 	coap_set_header_content_format(response, APPLICATION_JSON);
 	
@@ -104,7 +104,7 @@ static void simulation_res_post_handler(coap_message_t *request, coap_message_t 
 	size_t len = 0;
 	const char* msg_ptr;
 
-	LOG_INFO("Handling post request - fake temperature effect\n");
+	LOG_DBG("Handling post request - fake temperature effect\n");
 	
 	coap_set_header_content_format(response, TEXT_PLAIN);
 	response->code = BAD_REQUEST_4_00;

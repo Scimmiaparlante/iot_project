@@ -48,7 +48,7 @@ static void res_event_handler(void)
 	//DO THINGS
 	is_on_fire = readFireDetector();
 	
-	LOG_INFO("Notifying everyone\n");
+	LOG_DBG("Notifying everyone\n");
 	
     // Notify all the observers
     coap_notify_observers(&firedetector_res);
@@ -59,7 +59,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 {
 	int len;
 	
-	LOG_INFO("Handling get request\n");
+	LOG_DBG("Handling get request\n");
 	
 	coap_set_header_content_format(response, APPLICATION_JSON);
 	

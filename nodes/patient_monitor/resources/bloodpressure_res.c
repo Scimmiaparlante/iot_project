@@ -6,6 +6,8 @@
 #define LOG_MODULE "BLOODPRESSURE_RES"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
+#define RAND_SIGN 	(rand() % 2 == 0) ? -1 : 1)
+
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_event_handler(void);
@@ -32,8 +34,8 @@ static struct bloodpressure_t readBloodpressure()
 	static struct bloodpressure_t pressure = {80,110};
 	
 	//the first piece is to randomize the sign
-	pressure.max = ( pressure.max + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 100)) / 100 ) );
-	pressure.min = ( pressure.min + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 100)) / 100 ) );
+	pressure.max = ( pressure.max + (RAND_SIGN * ( ((float)(rand() % 100)) / 100 ) );
+	pressure.min = ( pressure.min + (RAND_SIGN * ( ((float)(rand() % 100)) / 100 ) );
 	
 	return pressure;
 }
@@ -51,7 +53,7 @@ static void res_event_handler(void)
 	pressure[1] = readBloodpressure();
 	pressure[2] = readBloodpressure();
 
-	LOG_INFO("Notifying everyone\n");
+	LOG_DBG("Notifying everyone\n");
 	
     // Notify all the observers
     coap_notify_observers(&bloodpressure_res);
@@ -62,7 +64,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 {
 	int len;
 	
-//	LOG_INFO("Handling get request\n");
+	LOG_DBG("Handling get request\n");
 	
 	coap_set_header_content_format(response, TEXT_PLAIN);
 	
