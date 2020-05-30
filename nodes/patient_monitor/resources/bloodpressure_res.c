@@ -28,12 +28,23 @@ struct bloodpressure_t {
 };
 		 
 //------------------------------ I/O EMULATION ----------------------------------------------------
-		 
+
+extern char serial_line_message[50];
+
 static struct bloodpressure_t readBloodpressure() 
 {
 	static struct bloodpressure_t pressure = {80,110};
 	
-	//the first piece is to randomize the sign
+	if(strcmp(serial_line_message, "MAXPRESS_HIGH") == 0)
+		pressure.max = 190;
+	else if(strcmp(serial_line_message, "MINPRESS_LOW") == 0)
+		pressure.min = 25;
+	else if(strcmp(serial_line_message, "PRESS_NORM") == 0) {
+		pressure.min = 80;
+		pressure.max = 110;
+	}		
+	*serial_line_message = '\0';
+	
 	pressure.max = ( pressure.max + (RAND_SIGN * ( ((float)(rand() % 100)) / 100 ) );
 	pressure.min = ( pressure.min + (RAND_SIGN * ( ((float)(rand() % 100)) / 100 ) );
 	

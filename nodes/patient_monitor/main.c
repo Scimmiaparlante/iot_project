@@ -5,6 +5,7 @@
 #include "coap-blocking-api.h"
 #include "coap-constants.h"
 #include "os/dev/button-hal.h"
+#include "os/dev/serial-line.h"
 
 /* Log configuration */
 #include "sys/log.h"
@@ -177,6 +178,7 @@ PROCESS_THREAD(bloodpressure_registration_process, ev, data)
  * --------------------------- SERVER PROCESS --------------------------------
  * -------------------------------------------------------------------------*/
 
+char serial_line_message[50] = "";
 
 
 PROCESS_THREAD(server_process, ev, data) 
@@ -201,10 +203,13 @@ PROCESS_THREAD(server_process, ev, data)
   	LOG_INFO("Coap server started!\n");
 
 	while(1) {
-   		PROCESS_WAIT_EVENT_UNTIL((ev == PROCESS_EVENT_TIMER && data == &periodic_timer) || ev == button_hal_press_event);
+   		PROCESS_WAIT_EVENT_UNTIL((ev == PROCESS_EVENT_TIMER && data == &periodic_timer) || ev == button_hal_press_event || ev == serial_line_event_message);
 
 		if(ev == button_hal_press_event)
 			n_button_press++;
+		else if(ev == serial_line_event_message) {
+			if(strcpy(serial_line_message, data));
+		}
 		else {
 	  		heartbeat_res.trigger();
 	  		bloodpressure_res.trigger();
