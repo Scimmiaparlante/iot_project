@@ -144,12 +144,13 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 			return 1;
 		}
 		
-		
+
 		//issue a get request for testing that the data is correct
 		CoapClient client = new CoapClient("coap://[" + addr.toString().substring(1) + "]/" + path);
 		CoapResponse response = client.get();
-		if(!response.isSuccess())
+		if(response == null || !response.isSuccess())
 			return 1;
+			
 		
 		//avoid duplicates
 		int i;
