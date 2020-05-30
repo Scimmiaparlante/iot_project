@@ -293,12 +293,11 @@ public class CommandInterpreter {
 			}
 			
 	        sc.close();
+			System.out.println("Script completed!");
 			
 		} catch (FileNotFoundException | IndexOutOfBoundsException e) {
 			System.out.println("Bad file name");
 		}
-		
-		System.out.println("Script completed!");
 	}
 	
 	
