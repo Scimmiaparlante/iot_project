@@ -37,7 +37,7 @@ AUTOSTART_PROCESSES(&heartbeat_registration_process, &server_process, &bloodpres
  * -------------------------------------------------------------------------*/
 
 //global variable to stop the main loop when the registration is completed
-uint8_t registered_heartbeat = 0;
+static uint8_t registered_heartbeat = 0;
 
 
 // Define a handler to handle the response from the server
@@ -67,6 +67,7 @@ PROCESS_THREAD(heartbeat_registration_process, ev, data)
 	static coap_message_t request[1];
 	static struct etimer periodic_timer;
 	static char resource_path[] = "/remote_dir";
+	static const char msg[] = "{\"a\" : \"register\" , \"t\" : \"sensor\" , \"st\" : \"heartbeat\" , \"p\" : \"/heartbeat\"}";
 	
   	PROCESS_BEGIN();
 
@@ -86,7 +87,6 @@ PROCESS_THREAD(heartbeat_registration_process, ev, data)
 	  	coap_set_header_uri_path(request, resource_path);
 	  	
 	  	// Set the payload
-	  	const char msg[] = "{\"a\" : \"register\" , \"t\" : \"sensor\" , \"st\" : \"heartbeat\" , \"p\" : \"/heartbeat\"}";
 	  	coap_set_payload(request, (uint8_t *)msg, sizeof(msg) -1);
 	  	coap_set_header_content_format(request, APPLICATION_JSON);
 	  	
@@ -104,7 +104,7 @@ PROCESS_THREAD(heartbeat_registration_process, ev, data)
 //--------------------------------------------------------------------------------------------------
 
 //global variable to stop the main loop when the registration is completed
-uint8_t registered_bloodpressure = 0;
+static uint8_t registered_bloodpressure = 0;
 
 // Define a handler to handle the response from the server
 void response_handler_bloodpressure(coap_message_t* response) 
@@ -133,6 +133,7 @@ PROCESS_THREAD(bloodpressure_registration_process, ev, data)
 	static coap_message_t request[1];
 	static struct etimer periodic_timer;
 	static char resource_path[] = "/remote_dir";
+	const char msg[] = "{\"a\" : \"register\" , \"t\" : \"sensor\" , \"st\" : \"bloodpressure\" , \"p\" : \"/bloodpressure\"}";
 	
   	PROCESS_BEGIN();
 
@@ -152,7 +153,6 @@ PROCESS_THREAD(bloodpressure_registration_process, ev, data)
 	  	coap_set_header_uri_path(request, resource_path);
 	  	
 	  	// Set the payload
-	  	const char msg[] = "{\"a\" : \"register\" , \"t\" : \"sensor\" , \"st\" : \"bloodpressure\" , \"p\" : \"/bloodpressure\"}";
 	  	coap_set_payload(request, (uint8_t *)msg, sizeof(msg) -1);
 	  	coap_set_header_content_format(request, APPLICATION_JSON);
 	  	
