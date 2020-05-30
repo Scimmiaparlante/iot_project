@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "coap-engine.h"
-#include "os/dev/button-hal.h"
 
 #include "sys/log.h"
 #define LOG_MODULE "HEARTBEAT_RES"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
+#define RAND_SIGN 	((rand() % 2 == 0) ? -1 : 1)
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_event_handler(void);
@@ -22,39 +22,31 @@ EVENT_RESOURCE(heartbeat_res,
 		 
 //------------------------------ I/O EMULATION ----------------------------------------------------
 
-extern button_hal_button_t* btn;
-extern uint8_t n_button_press;
-
-enum {NORMAL, TACHYCARDIA, BRADYCARDIA} heartbeat_state = NORMAL;
-
-float heartbeat[3];		 
+extern char serial_line_message[50];
 		 
 static int readHeartBeat() 
 {	
-	static float old_hb = 65;
+	static float hb = 65;
 	
-	float ret;
+	//------------------- SERIAL LINE COMMUNICATION TO EMULATE VARIATIONS ---------
+	// THE MESSAGES MUST BE IN THE FORM:  [hb|Mp|mp]=<value>
+	serial_line_message[2] = '\0';
+	uint8_t val = atoi(serial_line_message + 3);
 	
-	//if button pressed, cycle through the states
-	if (n_button_press > 0)		
-		heartbeat_state = (heartbeat_state + n_button_press) % 3;
-	
-	n_button_press = 0;
-	
-	if (heartbeat_state == NORMAL) {
-		ret = ( old_hb + ((rand() % 2 == 0) ? -1 : 1) * ( ((float)(rand() % 100)) / 300 ) );
-		old_hb = ret;
+	if (strcmp(serial_line_message, "hb") == 0) {
+		hb = val;
+		serial_line_message[0] = '\0';
 	}
-	else if (heartbeat_state == TACHYCARDIA)
-		ret = 150;
-	else
-		ret = 10;			//"LO STIAMO PERDENDO!!!"
+	//------------------------------------------------------------------------------
 	
-	return ret;
+	hb += RAND_SIGN * ( ((float)(rand() % 100)) / 300 );
+
+	return hb;
 }
 
 //-------------------------- END I/O EMULATION -------------------------------------------------------
 
+float heartbeat[3];
 
 static void res_event_handler(void)
 {

@@ -6,7 +6,7 @@
 #define LOG_MODULE "BLOODPRESSURE_RES"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
-#define RAND_SIGN 	(rand() % 2 == 0) ? -1 : 1)
+#define RAND_SIGN 	((rand() % 2 == 0) ? -1 : 1)
 
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -35,18 +35,23 @@ static struct bloodpressure_t readBloodpressure()
 {
 	static struct bloodpressure_t pressure = {80,110};
 	
-	if(strcmp(serial_line_message, "MAXPRESS_HIGH") == 0)
-		pressure.max = 190;
-	else if(strcmp(serial_line_message, "MINPRESS_LOW") == 0)
-		pressure.min = 25;
-	else if(strcmp(serial_line_message, "PRESS_NORM") == 0) {
-		pressure.min = 80;
-		pressure.max = 110;
-	}		
-	*serial_line_message = '\0';
+	//------------------- SERIAL LINE COMMUNICATION TO EMULATE VARIATIONS ---------
+	// THE MESSAGES MUST BE IN THE FORM:  [hb|Mp|mp]=<value>
+	serial_line_message[2] = '\0';
+	uint8_t val = atoi(serial_line_message + 3);
 	
-	pressure.max = ( pressure.max + (RAND_SIGN * ( ((float)(rand() % 100)) / 100 ) );
-	pressure.min = ( pressure.min + (RAND_SIGN * ( ((float)(rand() % 100)) / 100 ) );
+	if (strcmp(serial_line_message, "Mp") == 0) {
+		pressure.max = val;
+		serial_line_message[0] = '\0';
+	}
+	else if (strcmp(serial_line_message, "mp") == 0) {
+		pressure.min = val;
+		serial_line_message[0] = '\0';
+	}
+	//------------------------------------------------------------------------------
+	
+	pressure.max += RAND_SIGN * ( ((float)(rand() % 100)) / 100 );
+	pressure.min += RAND_SIGN * ( ((float)(rand() % 100)) / 100 );
 	
 	return pressure;
 }
