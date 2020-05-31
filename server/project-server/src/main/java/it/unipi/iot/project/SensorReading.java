@@ -21,8 +21,8 @@ public class SensorReading {
 		meas_unit = mu;
 	}
 	
-	
-	@SuppressWarnings("unchecked")
+	//this function parses a SenML message (only needed fields are parsed) and returns an array of sensor readings
+	@SuppressWarnings("unchecked")	//this is needed to use the getOrDefault function, because it has been designed for old java versions
 	static SensorReading[] fromJSONsenML(String json_text, RegisteredSensor sens) throws ParseException, NullPointerException
 	{
 		int base_time;
@@ -38,6 +38,7 @@ public class SensorReading {
 		JSONArray e = (JSONArray) json_payload.get("e");
 		SensorReading[] ret = new SensorReading[e.size()];
 		
+		//foreach data in the e field
 		for (int i = 0; i < e.size(); i++) {
 			JSONObject record = (JSONObject) e.get(i);
 						

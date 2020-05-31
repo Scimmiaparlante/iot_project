@@ -17,9 +17,13 @@ import it.unipi.iot.project.RegisteredSensor.SensorType;
 import it.unipi.iot.project.Rules.IRuleAction;
 import it.unipi.iot.project.Rules.Rule;
 
+/*
+ * This class implements the CLI of the application
+ */
+
 public class CommandInterpreter {
 	
-	static ControlApplication app;
+	static ControlApplication app;			//refereence to the application class
 	
 	public static void main(String[] args) {
 		
@@ -33,31 +37,34 @@ public class CommandInterpreter {
 		
 		System.out.println("CLI started");
 		
+		//-- MAIN LOOP --//
 		while(read_again) {
 			
 			System.out.print("\n>");
 			input = sc.nextLine();
 			
+			//what I read is parsed by this function
 			read_again = parseCommand(input);			
 		}
 		
+		//System shutdown
         sc.close();
         app.stop();
         System.exit(0);
 	}
 	
-	
+	//This function dispatches the command execution to the approrpiate function, reading the first word
 	private static boolean parseCommand(String input)
 	{
 		String[] words = input.split(" ");
 
-		if(words.length < 1)
+		if(words.length < 1)		//no input
 			return true;
 		
-		//see commandHelp() for details
+		//see commandHelp() for details on each command
 		switch (words[0]) {
 		case "exit":
-			return false;
+			return false;			//false will make the main loop end
 		case "list":
 			commandList(words);
 			break;
@@ -94,6 +101,7 @@ public class CommandInterpreter {
 	}
 
 
+	//show the help message
 	private static void commandHelp() {
 		System.out.println("The available commands are:");
 		System.out.println("list [sensors | actuators] \t\t\t show a list of the nodes (or sensors/actuators only) and their number");
@@ -110,31 +118,36 @@ public class CommandInterpreter {
 	}
 	
 	
+	//list the sensors/actuators
 	private static void commandList(String[] params) 
 	{		
 		boolean correct = false;
-		int numSensors = app.remoteDir_res.sensor_list.size();
-		int numActuators = app.remoteDir_res.actuator_list.size();
+		int numSensors = app.getRegisteredSensors().size();
+		int numActuators = app.getRegisteredActuators().size();
 		
+		//print all the sensors (if both or only sensors)
 		if (params.length < 2 || params[1].equals("sensors")) {
 			correct = true;
 			System.out.println("SENSORS:  (" + numSensors + ")");
-			for (int i = 0; i < app.remoteDir_res.sensor_list.size(); i++)
-				System.out.println(i + ") " + app.remoteDir_res.sensor_list.get(i).toString());
+			for (int i = 0; i < numSensors; i++)
+				System.out.println(i + ") " + app.getRegisteredSensors().get(i).toString());
 		}
 		
+		//print all the actuators (if both or only actuators)
 		if (params.length < 2 || params[1].equals("actuators")) {
 			correct = true;
 			System.out.println("ACTUATORS:  (" + numActuators + ")");
-			for (int i = 0; i < app.remoteDir_res.actuator_list.size(); i++)
-				System.out.println(i + ") " + app.remoteDir_res.actuator_list.get(i).toString());		
+			for (int i = 0; i < numActuators; i++)
+				System.out.println(i + ") " + app.getRegisteredActuators().get(i).toString());		
 		}
 		
+		//if we didn't get in one of the two ifs, the command was wrong
 		if(!correct)
 			System.out.println("What is '" + params[1] + "'?");
 	}
 	
 	
+	//function that prints all the received date. The readings can be filtered by type and time
 	private static void commandRead(String[] words) 
 	{		
 		SensorType type = null;
@@ -142,8 +155,8 @@ public class CommandInterpreter {
 		
 		int words_left = words.length - 1;
 		int i = 1;
-		while (words_left > 0) {
-			if (words[i].equals("-t") && words_left > 1) {
+		while (words_left > 0) {								//until I read all the words
+			if (words[i].equals("-t") && words_left > 1) {		//if I meet "-t" I nned also a number following
 				try {
 					min_time = Integer.parseInt(words[i+1]);
 					words_left--; i++;
@@ -151,7 +164,7 @@ public class CommandInterpreter {
 					System.out.println("Bad time format, use a timestamp");
 					return;
 				}
-			} else {	//I'm in this case also if there's only '-t'. Not an issue for the moment.
+			} else {	//type of sensor specified. I'm in this case also if there's only '-t'. Not an issue.
 				try {
 					type = SensorType.valueOf(words[i].toUpperCase());
 				} catch (IllegalArgumentException e) {
@@ -162,6 +175,7 @@ public class CommandInterpreter {
 			words_left--; i++;
 		}
 		
+		//retrieve the readings from the application and print them
 		ArrayList<SensorReading> res = app.getReadings(type, min_time);
 		
 		for (SensorReading sr : res)
@@ -169,25 +183,23 @@ public class CommandInterpreter {
 	}
 	
 	
+	//function to command an action on an actuator
 	private static void commandSet(String[] words) 
 	{
 		int act_num;
 		RegisteredActuator act;
-		//get sensor number
+		//get sensor number first
 		try {
 			act_num = Integer.parseInt(words[1]);
 			
-			if(act_num >= app.remoteDir_res.actuator_list.size() || act_num < 0)
-				throw new ArrayIndexOutOfBoundsException();
-			
-			act = app.remoteDir_res.actuator_list.get(act_num);
+			act = app.getRegisteredActuators().get(act_num);
 			
 		} catch (NumberFormatException | IndexOutOfBoundsException  e) {
 			System.out.println("Bad actuator number");
 			return;
 		}
 		
-		//get action
+		//get action (depending on the sensor type, a limited specific set off commands is available)
 		ActuationResult res;
 		try {
 			String action = words[2];
@@ -212,10 +224,12 @@ public class CommandInterpreter {
 			default:
 				return;
 			}
-
+			
+			//perform the actuation
 			res = app.setActuation(act, aa, "CLI");			
 			
 		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+			//If the command what not in the chosen enum, the command was wrong
 			System.out.println("Bad actuator action");
 			return;
 		}
@@ -224,20 +238,22 @@ public class CommandInterpreter {
 			System.out.println("Something went wrong during the actuation");
 	}
 	
+	//This command shows all the available or active rules
 	private static void commandRules(String[] words) 
 	{
+		//If the command is "rules applied", see the applied rules
 		if(words.length >= 2 && words[1].equals("applied")) {
 			//applied rules
-			for (int i = 0; i < app.rules.size(); i++) {
-				Rule r = app.rules.get(i);
+			for (int i = 0; i < app.getRules().size(); i++) {
+				Rule r = app.getRules().get(i);
 				
 				System.out.println(i + ") " + r.toString());
 			}
 			
 		} else {
 			//existing rules
-			for (int i = 0; i < app.rule_actions.length; i++) {
-				IRuleAction ra = app.rule_actions[i];
+			for (int i = 0; i < app.getRuleActions().length; i++) {
+				IRuleAction ra = app.getRuleActions()[i];
 				
 				System.out.println(i + ") [" + ra.getSensorType() + " -> " + ra.getActuatorType() + "] " +  ra.getName());
 			}
@@ -245,6 +261,7 @@ public class CommandInterpreter {
 	}
 	
 	
+	//command to apply a rule to one registered sensor and one registered actuator
 	private static void commandApply(String[] words) 
 	{
 		RegisteredActuator actuator;
@@ -252,9 +269,9 @@ public class CommandInterpreter {
 		IRuleAction rule_act;
 		try {
 			
-			rule_act = app.rule_actions[Integer.parseInt(words[1])];
-			sensor = app.remoteDir_res.sensor_list.get(Integer.parseInt(words[2]));
-			actuator = app.remoteDir_res.actuator_list.get(Integer.parseInt(words[3]));
+			rule_act = app.getRuleActions()[Integer.parseInt(words[1])];
+			sensor = app.getRegisteredSensors().get(Integer.parseInt(words[2]));
+			actuator = app.getRegisteredActuators().get(Integer.parseInt(words[3]));
 			
 		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
 			System.out.println("Bad command: specify the 3 numbers correctly");
@@ -269,10 +286,11 @@ public class CommandInterpreter {
 			System.out.println("Rule application failed");
 	}
 	
+	//command to remove an applied rule
 	private static void commandUnapply(String[] words) 
 	{
 		try {
-			app.rules.remove(Integer.parseInt(words[1]));
+			app.getRules().remove(Integer.parseInt(words[1]));
 			
 		} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
 			System.out.println("Bad index: specify the index correctly");
@@ -280,6 +298,7 @@ public class CommandInterpreter {
 		}
 	}
 	
+	//command to load a text file containg commands
 	private static void commandScript(String[] words) 
 	{
 		try {
@@ -301,6 +320,7 @@ public class CommandInterpreter {
 	}
 	
 	
+	//command that displays the possible actions for each type of actuator
 	private static void commandCommands(String[] words)
 	{
 		System.out.println(ActuatorType.ALARM.toString() + " -> " + Arrays.toString(AlarmAction.values()));

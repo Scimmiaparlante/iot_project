@@ -8,11 +8,15 @@ public class RegisteredActuator extends RegisteredNode {
 		public String getActionCommand();
 	}
 	
+	//enumeration containing the types of existing actuators
 	public enum ActuatorType {
 		ALARM, FIREALARM, PATIENTALARM, DASHBOARD, AIRCOND
 	}
 	
 	//----- here we define the actions for each possible actuator type;
+	// The system is going to accept an actuation command for an actuator only if it is in this list
+	// It implements an interface to share the getActionCommand() function, that translated the command into a string for the actuator
+	// and to be utilised by the application without knowing the actual type
 	public enum AlarmAction implements IActuatorAction {
 		ON, OFF;
 		public String getActionCommand() {

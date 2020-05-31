@@ -38,9 +38,10 @@ public class SensorHandler implements CoapHandler {
 		
 		//check if there are rules to apply
 		for (SensorReading sr : readings)
-			for (Rule r : app.rules)
+			for (Rule r : app.getRules())
 				if(r.sensor == this.sensor) {
 					
+					//there is a rule, apply it (we need final variables to create the new thread utilising their values)
 					final Rule fr = r;
 					final IActuatorAction command = r.check(sr);
 					final String origin = sr.sensor.node_address.toString().substring(1);

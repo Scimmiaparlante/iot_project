@@ -21,7 +21,7 @@ import it.unipi.iot.project.Rules.Rule;
 public class ControlApplication {
 	
 	CoapServer server;
-	CoapRemoteDirectoryResource remoteDir_res;
+	CoapRemoteDirectoryResource remoteDir_res;		//reference t the remote directoy (here are the lists of sensors and actuators)
 	ArrayList<SensorReading> sensor_data;
 	IRuleAction[] rule_actions;
 	ArrayList<Rule> rules;
@@ -43,7 +43,6 @@ public class ControlApplication {
 		server.start();
 		
 		System.out.println("Coap server started!");
-		
 	}
 	
 
@@ -84,7 +83,7 @@ public class ControlApplication {
 		return getReadings(null, min_time);
 	}
 	
-	
+	//get the sensors' readings, filtered by sensor type and minimum time instant
 	public ArrayList<SensorReading> getReadings(SensorType type, Integer min_time) 
 	{
 		ArrayList<SensorReading> ret = new ArrayList<SensorReading>();
@@ -97,7 +96,8 @@ public class ControlApplication {
 		return ret;
 	}
 	
-	
+	//function to perform an action on a specified sensor.
+	//The origin parameter is an ID of the entity that triggered the command, in case the actuator needs to know it (e.g. dashboard)
 	public ActuationResult setActuation(RegisteredActuator actuator, IActuatorAction action, String origin) 
 	{
 		CoapClient client = new CoapClient("coap://[" + actuator.node_address.toString().substring(1) + "]/" + actuator.resource_path);
@@ -111,6 +111,7 @@ public class ControlApplication {
 	}
 	
 	
+	//function to apply a rule to specific sensor and actuator
 	public boolean setRule(RegisteredSensor sensor, RegisteredActuator actuator, IRuleAction rule_act) 
 	{
 		if (actuator.type != rule_act.getActuatorType()) {
@@ -127,7 +128,25 @@ public class ControlApplication {
 		return true;
 	}
 	
+	public ArrayList<Rule> getRules()
+	{
+		return rules;
+	}
 	
+	public IRuleAction[] getRuleActions()
+	{
+		return rule_actions;
+	}
+	
+	public ArrayList<RegisteredSensor> getRegisteredSensors()
+	{
+		return remoteDir_res.sensor_list;
+	}
+	
+	public ArrayList<RegisteredActuator> getRegisteredActuators()
+	{
+		return remoteDir_res.actuator_list;
+	}
 	
 	//----------Here you need to define the control rules---------------------------------------------------------
 	
@@ -135,9 +154,15 @@ public class ControlApplication {
 		
 		rules = new ArrayList<Rule>();
 		
+		/*
+		 * Here is a list of the existing applicable rules in the system.
+		 * The rule actions must be defined creating an (anonymous) object that implements the IRuleAction interface.
+		 * Each object represent a rule that can be applied to a real sensor and actuator at runtime
+		 */
+		
 		rule_actions = new IRuleAction[] {
 				
-				//RULE #1 - FIRE ALARM ACTIVATION
+				//RULE #0 - FIRE ALARM ACTIVATION
 				new IRuleAction() {
 					
 					@Override public String getName() { return "Fire-alarm trigger rule"; }
@@ -150,7 +175,7 @@ public class ControlApplication {
 					}
 				},
 				
-				//RULE #2 - PATIENT ALARM ACTIVATION FOR HEARTBEAT
+				//RULE #1 - PATIENT ALARM ACTIVATION FOR HEARTBEAT
 				new IRuleAction() {
 					
 					@Override public String getName() { return "Patient-alarm for heartbeat trigger rule"; }
@@ -165,7 +190,7 @@ public class ControlApplication {
 					}
 				},
 				
-				//RULE #3 - PATIENT ALARM ACTIVATION FOR PRESSURE
+				//RULE #2 - PATIENT ALARM ACTIVATION FOR PRESSURE
 				new IRuleAction() {
 					
 					@Override public String getName() { return "Patient-alarm for pressure trigger rule"; }
@@ -186,7 +211,7 @@ public class ControlApplication {
 					}
 				},
 				
-				//RULE #4 - DASHBOARD MESSAGES FOR PRESSURE
+				//RULE #3 - DASHBOARD MESSAGES FOR PRESSURE
 				new IRuleAction() {
 					
 					@Override public String getName() { return "Dashboard messages for pressure sensors"; }
@@ -203,7 +228,7 @@ public class ControlApplication {
 					}
 				},
 				
-				//RULE #5 - DASHBOARD MESSAGES FOR HEARTBEAT
+				//RULE #4 - DASHBOARD MESSAGES FOR HEARTBEAT
 				new IRuleAction() {
 					
 					@Override public String getName() { return "Dashboard messages for heartbeat sensors"; }
@@ -217,7 +242,7 @@ public class ControlApplication {
 					}
 				},
 					
-				//RULE #6 - AIR CONDITIONING BASED ON TEMPERATURET
+				//RULE #5 - AIR CONDITIONING BASED ON TEMPERATURET
 				new IRuleAction() {
 					
 					@Override public String getName() { return "Air conditioning activation"; }
@@ -231,6 +256,8 @@ public class ControlApplication {
 					}
 				},
 		};
+		
+		/* END OF LIST */
 		
 	}
 

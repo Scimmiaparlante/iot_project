@@ -25,13 +25,13 @@ import it.unipi.iot.project.RegisteredSensor.SensorType;
 
 public class CoapRemoteDirectoryResource extends CoapResource {
 	
-	ArrayList<RegisteredSensor> sensor_list;		//SORTED LIST
-	ArrayList<RegisteredActuator> actuator_list;	//SORTED LIST
-	ControlApplication app;
+	ArrayList<RegisteredSensor> sensor_list;		//SORTED LIST containing the registered sensors
+	ArrayList<RegisteredActuator> actuator_list;	//SORTED LIST containing the registered sensors
+	ControlApplication app;							//reference to the main application
 	
-	static final boolean debug = true;
+	static final boolean debug = true;				//varible to eneble the debug print
 
-	
+	//constructor
 	public CoapRemoteDirectoryResource(String name, ControlApplication ca) 
 	{
 		super(name);
@@ -43,6 +43,7 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 	}
 	
 	//function to handle GET requests
+	//responds with a list of sensors and actuators
 	public void handleGET(CoapExchange exchange) 
 	{
 		String response  = "";
@@ -63,7 +64,7 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		String payload = new String(exchange.getRequestPayload());
 		int content_format = exchange.getRequestOptions().getContentFormat();
 		
-		// not a json message
+		// not a json message -> bad_request
 		if (content_format != MediaTypeRegistry.APPLICATION_JSON) {
 			bad_request(exchange, "Bad content_format");
 			return;
@@ -71,12 +72,13 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		
 		String action, type, subtype, path;
 		try {
+			//parse the JSON request
 			JSONObject json_payload = (JSONObject) JSONValue.parseWithException(payload);
 			
-			action = json_payload.get("a").toString();
-			type = json_payload.get("t").toString();
-			subtype = json_payload.get("st").toString();
-			path = json_payload.get("p").toString();
+			action = json_payload.get("a").toString();			//action: register
+			type = json_payload.get("t").toString();			//type: actuator/sensor
+			subtype = json_payload.get("st").toString();		//subtype: type of actuator/sensor
+			path = json_payload.get("p").toString();			//coap resource path
 					
 		} catch (org.json.simple.parser.ParseException e) {
 			bad_request(exchange, "Bad JSON request");
@@ -98,11 +100,12 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 			return;
 		}
 		
+		//if we get here, the action has ben performed correctly: success reply
 		exchange.respond(ResponseCode.CHANGED);
 		printDebug("Registration successful from " + addr.toString() + " for " + subtype);
 	}
 	
-	
+	//function to handle the registration of a resource
 	private int handleRegistration(String type, String subtype, String path, InetAddress addr)
 	{
 		int ret = 0;		
@@ -122,11 +125,12 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		return ret;
 	}
 	
-	
+	//function to handle the registration of a sensor
 	private int handleRegistrationSensor(String type, String path, InetAddress addr) 
 	{	
 		SensorType type_enum;
 		
+		//assign the type, depending on the received string
 		switch (type) {
 		case "temperature":
 			type_enum = SensorType.TEMPERATURE;
@@ -145,14 +149,14 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		}
 		
 
-		//issue a get request for testing that the data is correct
+		//issue a get request to test that the data is correct
 		CoapClient client = new CoapClient("coap://[" + addr.toString().substring(1) + "]/" + path);
 		CoapResponse response = client.get();
 		if(response == null || !response.isSuccess())
 			return 1;
 			
 		
-		//avoid duplicates
+		//check if it is already present to avoid duplicates
 		int i;
 		for (i = 0; i < sensor_list.size(); i++)
 			if(sensor_list.get(i).node_address.equals(addr) && sensor_list.get(i).resource_path.equals(path))
@@ -160,7 +164,7 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 		
 		if (i == sensor_list.size()) {
 			
-			//ok, we're go. Create new data structures and subscribe
+			//ok, no duplicates. Create new data structures and subscribe
 			CoapObserveRelation relation = null;
 			
 			RegisteredSensor sensor = new RegisteredSensor(addr, type_enum, path, relation);
@@ -178,10 +182,12 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 	}
 	
 	
+	//function to handle the registration of a sensor
 	private int handleRegistrationActuator(String type, String path, InetAddress addr) 
 	{
 		ActuatorType type_enum;
 		
+		//assign the type, depending on the received string
 		switch (type) {
 		case "alarm":
 			type_enum = ActuatorType.ALARM;
@@ -219,13 +225,14 @@ public class CoapRemoteDirectoryResource extends CoapResource {
 	}
 	
 	
-	
+	//utility function to transmit a BAD_REQUEST response.
 	private void bad_request(CoapExchange exch, String mess) 
 	{
 		printDebug(mess + " from " + exch.getSourceAddress());
 		exch.respond(ResponseCode.BAD_REQUEST);
 	}
 	
+	//debug function to print errors
 	private void printDebug(String s) 
 	{
 		if(debug)
