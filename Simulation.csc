@@ -24,7 +24,7 @@
       org.contikios.cooja.contikimote.ContikiMoteType
       <identifier>mtype829</identifier>
       <description>BR</description>
-      <source>[CONTIKI_DIR]/MATTEO_PROGETTO/nodes/border_router/border-router.c</source>
+      <source>[CONTIKI_DIR]/Zini_Matteo_533195_project/nodes/border_router/border-router.c</source>
       <commands>make border-router.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
@@ -49,7 +49,7 @@
       org.contikios.cooja.contikimote.ContikiMoteType
       <identifier>mtype951</identifier>
       <description>patient</description>
-      <source>[CONTIKI_DIR]/MATTEO_PROGETTO/nodes/patient_monitor/main.c</source>
+      <source>[CONTIKI_DIR]/Zini_Matteo_533195_project/nodes/patient_monitor/main.c</source>
       <commands>make main.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
@@ -74,7 +74,7 @@
       org.contikios.cooja.contikimote.ContikiMoteType
       <identifier>mtype458</identifier>
       <description>temp</description>
-      <source>[CONTIKI_DIR]/MATTEO_PROGETTO/nodes/temperature_sensor/main.c</source>
+      <source>[CONTIKI_DIR]/Zini_Matteo_533195_project/nodes/temperature_sensor/main.c</source>
       <commands>make main.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
@@ -99,7 +99,7 @@
       org.contikios.cooja.contikimote.ContikiMoteType
       <identifier>mtype343</identifier>
       <description>fire-sensor</description>
-      <source>[CONTIKI_DIR]/MATTEO_PROGETTO/nodes/fire_sensor/main.c</source>
+      <source>[CONTIKI_DIR]/Zini_Matteo_533195_project/nodes/fire_sensor/main.c</source>
       <commands>make main.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
@@ -124,7 +124,7 @@
       org.contikios.cooja.contikimote.ContikiMoteType
       <identifier>mtype736</identifier>
       <description>fire-alarm</description>
-      <source>[CONTIKI_DIR]/MATTEO_PROGETTO/nodes/fire_alarm/main.c</source>
+      <source>[CONTIKI_DIR]/Zini_Matteo_533195_project/nodes/fire_alarm/main.c</source>
       <commands>make main.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
@@ -149,7 +149,7 @@
       org.contikios.cooja.contikimote.ContikiMoteType
       <identifier>mtype158</identifier>
       <description>patient-alarm</description>
-      <source>[CONTIKI_DIR]/MATTEO_PROGETTO/nodes/patient_alarm/main.c</source>
+      <source>[CONTIKI_DIR]/Zini_Matteo_533195_project/nodes/patient_alarm/main.c</source>
       <commands>make main.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
@@ -174,7 +174,7 @@
       org.contikios.cooja.contikimote.ContikiMoteType
       <identifier>mtype161</identifier>
       <description>Dashboard</description>
-      <source>[CONTIKI_DIR]/MATTEO_PROGETTO/nodes/doctor_dashboard/main.c</source>
+      <source>[CONTIKI_DIR]/Zini_Matteo_533195_project/nodes/doctor_dashboard/main.c</source>
       <commands>make main.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
@@ -199,7 +199,7 @@
       org.contikios.cooja.contikimote.ContikiMoteType
       <identifier>mtype667</identifier>
       <description>air-cond</description>
-      <source>[CONTIKI_DIR]/MATTEO_PROGETTO/nodes/air_conditiong/main.c</source>
+      <source>[CONTIKI_DIR]/Zini_Matteo_533195_project/nodes/air_conditiong/main.c</source>
       <commands>make main.cooja TARGET=cooja</commands>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.Battery</moteinterface>
